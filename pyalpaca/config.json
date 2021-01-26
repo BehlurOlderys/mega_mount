@@ -1,0 +1,12 @@
+{
+  "drivers": [
+    {
+      "device_type": "filterwheel",
+      "device_number": 0,
+      "device_driver": "SimpleFilterWheelDriver",
+      "driver_config": {
+        "names": ["Halpha", "OIII", "SII"]
+      }
+    }
+  ]
+}
