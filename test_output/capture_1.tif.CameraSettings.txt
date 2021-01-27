@@ -1,0 +1,35 @@
+[ZWO ASI120MM Mini]
+Pan=0
+Tilt=0
+Output Format=TIFF files (*.tif)
+Binning=1
+Capture Area=1280x960
+Colour Space=MONO16
+Temperature=26.7
+Discard Split Frames=Off
+High Speed Mode=On
+Overclock=0
+Turbo USB=86(Auto)
+Flip=None
+Frame Rate Limit=Maximum
+Gain=39
+Exposure=0.29952
+Timestamp Frames=Off
+Brightness=20
+Auto Exp Max Gain=100
+Auto Exp Max Exp M S=30000
+Auto Exp Target Brightness=100
+Banding Threshold=35
+Banding Suppression=0
+Apply Flat=None
+Subtract Dark=None
+#Black Point
+Display Black Point=0
+#MidTone Point
+Display MidTone Point=0.5
+#White Point
+Display White Point=1
+Notes=
+Manual Filter Wheel=Red
+TimeStamp=2021-01-17T23:07:11.0265382Z
+SharpCapVersion=3.2.6473.0

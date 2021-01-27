@@ -1,0 +1,1 @@
+"C:\Program Files (x86)\PlateSolver\PlateSolver.exe" /solvefile .\current.fts .\result.txt 135 3.75
