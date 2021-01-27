@@ -33,6 +33,7 @@ from .httpresponses import HttpSuccessResponse, HttpErrorResponse
 class DeviceService(pyrestful.rest.RestHandler):
 
     def get_resource(self, device_type, device_number, resource):
+        print("Trying to get resource: " + resource)
         driver = getDriverInstance(device_type, device_number)
         response = None
 

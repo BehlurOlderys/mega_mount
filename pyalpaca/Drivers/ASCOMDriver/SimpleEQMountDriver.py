@@ -194,6 +194,7 @@ class SimpleEQMountDriver(MyDeviceDriver):
             { "Maximum": 0, "Minimum": 0}
         ]
 
+    @property
     def can_move_axis(self, axis_number):
         return axis_number < 2
 
