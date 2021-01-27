@@ -32,7 +32,7 @@ from .httpresponses import HttpSuccessResponse, HttpErrorResponse
 
 class DeviceService(pyrestful.rest.RestHandler):
 
-    def get_resource(self, device_type, device_number, resource):
+    def get_resource(self, device_type, device_number, resource, *args):
         print("Trying to get resource: " + resource)
         driver = getDriverInstance(device_type, device_number)
         response = None
@@ -45,7 +45,8 @@ class DeviceService(pyrestful.rest.RestHandler):
             attr = getattr(driver, resource)
             if callable(attr):
                 # might be a class instance method
-                value = attr()
+                print("Arguments passed: " + str(args))
+                value = attr(*args)
             else:
                 # might be a property
                 value = attr
@@ -67,9 +68,11 @@ class DeviceService(pyrestful.rest.RestHandler):
             }
             self.set_status(500, str(exc))
     
-        self.write(response) 
+        self.write(response)
+        self.finish()
 
-        self.finish() 
+    def get_query_argument_for_get_request(self, argument):
+        return self.request.query_arguments[argument][0].decode()
 
     def __get_single_value_string_from_put_request(self, input_name):
         # read www/x-www-form-urlencoded parameters

@@ -185,9 +185,9 @@ class SimpleTelescopeService(DeviceService):
         super().get_resource(device_type, device_number, "axis_rates")
 
     @get(_path="/api/v1/{device_type}/{device_number}/canmoveaxis", _types=[str, str], _produces=mediatypes.APPLICATION_JSON)
-    def can_move_axis(self, axis_number, device_type, device_number):
-        #TODO: custom getter!
-        pass
+    def can_move_axis(self, device_type, device_number):
+        axis = super().get_query_argument_for_get_request("Axis")
+        super().get_resource(device_type, device_number, "can_move_axis", int(axis))
 
     @get(_path="/api/v1/{device_type}/{device_number}/destinationsideofpier", _types=[str, str], _produces=mediatypes.APPLICATION_JSON)
     def destination_side_of_pier(self, device_type, device_number):
