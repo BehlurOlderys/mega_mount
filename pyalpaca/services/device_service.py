@@ -131,9 +131,32 @@ class DeviceService(pyrestful.rest.RestHandler):
 
         self.finish() 
 
+    @get(_path="/api/v1/{device_type}/{device_number}/name", _types=[str, int, str], _produces=mediatypes.APPLICATION_JSON)
+    def get_name(self, device_type, device_number):
+        self.get_resource(device_type, device_number, "name")
+
+    @get(_path="/api/v1/{device_type}/{device_number}/description", _types=[str, int, str],
+         _produces=mediatypes.APPLICATION_JSON)
+    def get_description(self, device_type, device_number):
+        self.get_resource(device_type, device_number, "description")
+
+    @get(_path="/api/v1/{device_type}/{device_number}/driverinfo", _types=[str, int, str],
+         _produces=mediatypes.APPLICATION_JSON)
+    def get_driver_info(self, device_type, device_number):
+        self.get_resource(device_type, device_number, "driver_info")    \
+
+    @get(_path="/api/v1/{device_type}/{device_number}/driverversion", _types=[str, int, str],
+         _produces=mediatypes.APPLICATION_JSON)
+    def get_driver_version(self, device_type, device_number):
+        self.get_resource(device_type, device_number, "driver_version")
+
     @get(_path="/api/v1/{device_type}/{device_number}/interfaceversion", _types=[str, int, str], _produces=mediatypes.APPLICATION_JSON)
     def get_interface_version(self, device_type, device_number):
         self.get_resource(device_type, device_number, "interface_version")
+
+    @get(_path="/api/v1/{device_type}/{device_number}/supportedactions", _types=[str, int, str], _produces=mediatypes.APPLICATION_JSON)
+    def get_supported_actions(self, device_type, device_number):
+        self.get_resource(device_type, device_number, "supported_actions")
 
     @get(_path="/api/v1/{device_type}/{device_number}/connected", _types=[str, int, str], _produces=mediatypes.APPLICATION_JSON)
     def get_connected(self, device_type, device_number):

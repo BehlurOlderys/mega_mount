@@ -13,8 +13,10 @@ class MyDeviceDriver(IAscomDriver):
         self.__connected_state = False
         self.__name = name
         self.__description = description
-        self.__supported_actions = []
         self.__interface_version = 1
+        self.__driver_info = "TODO driver info"
+        self.__driver_version = "1.0"
+        self.__supported_actions = ["todo_action_1","todo_action_2","todo_action_3"]
 
     #
     # IAscomDriver
@@ -23,6 +25,14 @@ class MyDeviceDriver(IAscomDriver):
     @property
     def interface_version(self):
         return self.__interface_version
+
+    @property
+    def driver_info(self):
+        return self.__driver_info
+
+    @property
+    def driver_version(self):
+        return self.__driver_version
 
     @property
     def is_connected(self):
