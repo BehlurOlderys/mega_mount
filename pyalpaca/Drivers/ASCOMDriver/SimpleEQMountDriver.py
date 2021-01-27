@@ -5,10 +5,23 @@ class SimpleEQMountDriver(MyDeviceDriver):
     def __init__(self, config):
         super().__init__("SimpleEQMountDriver", "minimal equatorial mount")
         self.__config = config
-        self.__tracking = False
-        self.__tracking_rate = 0
         self.__tracking_rates = [0]
         self.__is_pulse_guiding = False
+        self.__declinationrate = 1.0
+        self.__doesrefraction = False
+        self.__guideratedeclination = 1.0
+        self.__guideraterightascension = 1.0
+        self.__rightascensionrate = 1.0
+        self.__sideofpier = 0
+        self.__siteelevation = 0.0
+        self.__sitelatitude = 0.0
+        self.__sitelongitude = 0.0
+        self.__slewsettletime = 0.0
+        self.__targetdeclination = 0.0
+        self.__targetrightascension = 0.0
+        self.__tracking = False
+        self.__tracking_rate = 0
+        self.__utcdate = ""
 
     @property
     def alignment_mode(self):
@@ -100,7 +113,7 @@ class SimpleEQMountDriver(MyDeviceDriver):
 
     @property
     def declination_rate(self):
-        return 0.0
+        return self.__declinationrate
 
     @property
     def does_refraction(self):
@@ -116,11 +129,11 @@ class SimpleEQMountDriver(MyDeviceDriver):
 
     @property
     def guide_rate_declination(self):
-        return 0.0
+        return self.__guideratedeclination
 
     @property
     def guide_rate_right_ascension(self):
-        return 0.0
+        return self.__guideraterightascension
 
     @property
     def is_pulse_guiding(self):
@@ -132,7 +145,7 @@ class SimpleEQMountDriver(MyDeviceDriver):
 
     @property
     def right_ascension_rate(self):
-        return 0.0
+        return self.__rightascensionrate
 
     @property
     def side_of_pier(self):
@@ -186,13 +199,16 @@ class SimpleEQMountDriver(MyDeviceDriver):
     def utc_date(self):
         return 0.0
 
-    @property
-    def axis_rates(self):
-        return [
-            { "Maximum": 0, "Minimum": 0},
-            { "Maximum": 0, "Minimum": 0},
-            { "Maximum": 0, "Minimum": 0}
-        ]
+    def axis_rates(self, axis):
+        rates = [
+                    [
+                        { "Maximum": 5.0, "Minimum": 1.0}
+                    ],
+                    [
+                        { "Maximum": 3.0, "Minimum": 2.0},
+                    ]
+                ]
+        return rates[axis]
 
     def can_move_axis(self, axis_number):
         print("Can move axis: " + str(axis_number) + "?")
@@ -202,6 +218,58 @@ class SimpleEQMountDriver(MyDeviceDriver):
     def destination_side_of_pier(self):
         return -1
 
+    ##################################
+    # COMMANDS AND INPUTS:
+    ##################################
+
+    @declination_rate.setter
+    def declination_rate(self, value):
+        self.__declinationrate = value
+
+    @does_refraction.setter
+    def doesrefraction(self, value):
+        self.__doesrefraction = value
+
+    @guide_rate_declination.setter
+    def guideratedeclination(self, value):
+        self.__guideratedeclination = value
+
+    @guide_rate_right_ascension.setter
+    def guideraterightascension(self, value):
+        self.__guideraterightascension = value
+
+    @right_ascension_rate.setter
+    def rightascensionrate(self, value):
+        self.__rightascensionrate = value
+
+    @side_of_pier.setter
+    def sideofpier(self, value):
+        self.__sideofpier = value
+
+    @site_elevation.setter
+    def siteelevation(self, value):
+        self.__siteelevation = value
+
+    @site_latitude.setter
+    def sitelatitude(self, value):
+        self.__sitelatitude = value
+
+    @site_longitude.setter
+    def sitelongitude(self, value):
+        self.__sitelongitude = value
+
+    @slew_settle_time.setter
+    def slewsettletime(self, value):
+        self.__slewsettletime = value
+
+    @target_declination.setter
+    def targetdeclination(self, value):
+        self.__targetdeclination = value
+
+    @target_right_ascension.setter
+    def targetrightascension(self, value):
+        self.__targetrightascension = value
+
     @tracking.setter
     def tracking(self, value):
         self.__tracking = value
@@ -209,3 +277,71 @@ class SimpleEQMountDriver(MyDeviceDriver):
     @tracking_rate.setter
     def tracking_rate(self, value):
         self.__tracking_rate = value
+
+    @utc_date.setter
+    def utcdate(self, value):
+        self.__utcdate = value
+
+    def abortslew(self):
+        # TODO
+        pass
+
+    def findhome(self):
+        # TODO
+        pass
+
+    def moveaxis(self, axis, rate):
+        print("Moving axis " + str(axis) + " at rate " + str(rate))
+        pass
+
+    def park(self):
+        # TODO:
+        pass
+
+    def pulseguide(self, direction, duration):
+        # TODO
+        pass
+
+    def setpark(self):
+        # TODO
+        pass
+
+    def slewtoaltaz(self, altitude, azimuth):
+        # TODO
+        pass
+
+    def slewtoaltazasync(self, altitude, azimuth):
+        # TODO
+        pass
+
+    def slewtocoordinates(self, right_ascension, declination):
+        # TODO
+        pass
+
+    def slewtocoordinatesasync(self, right_ascension, declination):
+        # TODO
+        pass
+
+    def slewtotarget(self):
+        # TODO
+        pass
+
+    def slewtotargetasync(self):
+        # TODO
+        pass
+
+    def synctoaltaz(self, altitude, azimuth):
+        # TODO
+        pass
+
+    def synctocoordinates(self, right_ascension, declination):
+        # TODO
+        pass
+
+    def synctotarget(self):
+        # TODO
+        pass
+
+    def unpark(self):
+        # TODO
+        pass

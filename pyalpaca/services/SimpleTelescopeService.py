@@ -1,6 +1,7 @@
 from pyrestful import mediatypes
 from pyrestful.rest import get, post, put, delete
 from .device_service import DeviceService
+from .config import getDriverInstance
 
 
 class SimpleTelescopeService(DeviceService):
@@ -182,7 +183,8 @@ class SimpleTelescopeService(DeviceService):
 
     @get(_path="/api/v1/{device_type}/{device_number}/axisrates", _types=[str, str], _produces=mediatypes.APPLICATION_JSON)
     def axis_rates(self, device_type, device_number):
-        super().get_resource(device_type, device_number, "axis_rates")
+        axis = super().get_query_argument_for_get_request("Axis")
+        super().get_resource(device_type, device_number, "axis_rates", int(axis))
 
     @get(_path="/api/v1/{device_type}/{device_number}/canmoveaxis", _types=[str, str], _produces=mediatypes.APPLICATION_JSON)
     def can_move_axis(self, device_type, device_number):
@@ -192,6 +194,144 @@ class SimpleTelescopeService(DeviceService):
     @get(_path="/api/v1/{device_type}/{device_number}/destinationsideofpier", _types=[str, str], _produces=mediatypes.APPLICATION_JSON)
     def destination_side_of_pier(self, device_type, device_number):
         super().get_resource(device_type, device_number, "destination_side_of_pier")
+
+
+    #####################
+    # PUT METHODS: TODO TODO TODO !!!!!!!!!!
+    #####################
+
+    @put(_path="/api/v1/{device_type}/{device_number}/declinationrate", _types=[str, str], _produces=mediatypes.APPLICATION_JSON)
+    def set_declination_rate(self, device_type, device_number):
+        super().set_one_float_resource(device_type, device_number, "DeclinationRate", "declination_rate")
+
+
+    # @declinationrate.setter
+    # def declination_rate(self, value):
+    #     self.__declinationrate = value
+    #
+    # @doesrefraction.setter
+    # def doesrefraction(self, value):
+    #     self.__doesrefraction = value
+    #
+    # @guideratedeclination.setter
+    # def guideratedeclination(self, value):
+    #     self.__guideratedeclination = value
+    #
+    # @guideraterightascension.setter
+    # def guideraterightascension(self, value):
+    #     self.__guideraterightascension = value
+    #
+    # @rightascensionrate.setter
+    # def rightascensionrate(self, value):
+    #     self.__rightascensionrate = value
+    #
+    # @sideofpier.setter
+    # def sideofpier(self, value):
+    #     self.__sideofpier = value
+    #
+    # @siteelevation.setter
+    # def siteelevation(self, value):
+    #     self.__siteelevation = value
+    #
+    # @sitelatitude.setter
+    # def sitelatitude(self, value):
+    #     self.__sitelatitude = value
+    #
+    # @sitelongitude.setter
+    # def sitelongitude(self, value):
+    #     self.__sitelongitude = value
+    #
+    # @slewsettletime.setter
+    # def slewsettletime(self, value):
+    #     self.__slewsettletime = value
+    #
+    # @targetdeclination.setter
+    # def targetdeclination(self, value):
+    #     self.__targetdeclination = value
+    #
+    # @targetrightascension.setter
+    # def targetrightascension(self, value):
+    #     self.__targetrightascension = value
+    #
+
+    @put(_path="/api/v1/{device_type}/{device_number}/tracking", _types=[str, str], _produces=mediatypes.APPLICATION_JSON)
+    def set_tracking(self, device_type, device_number):
+        super().set_one_boolean_resource(device_type, device_number, "Tracking", "tracking")
+
+    @put(_path="/api/v1/{device_type}/{device_number}/trackingrate", _types=[str, str],
+         _produces=mediatypes.APPLICATION_JSON)
+    def set_tracking_rate(self, device_type, device_number):
+        super().set_one_integer_resource(device_type, device_number, "TrackingRate", "tracking_rate")
+    #
+    # @utcdate.setter
+    # def utcdate(self, value):
+    #     self.__utcdate = value
+    #
+    @put(_path="/api/v1/{device_type}/{device_number}/abortslew", _types=[str, str], _produces=mediatypes.APPLICATION_JSON)
+    def abortslew(self, device_type, device_number):
+        super().standard_response_for_put(device_type, device_number, lambda driver: driver.abortslew())
+    #
+    # def findhome(self):
+    #     # TODO
+    #     pass
+
+    @put(_path="/api/v1/{device_type}/{device_number}/moveaxis", _types=[str, str], _produces=mediatypes.APPLICATION_JSON)
+    def move_axis(self, device_type, device_number):
+        [axis, rate] = super().get_string_values_from_put_request("Axis", "Rate")
+        super().standard_response_for_put(device_type, device_number, lambda driver: driver.moveaxis(axis, rate))
+
+    # def park(self):
+    #     # TODO:
+    #     pass
+    #
+    # def pulseguide(self, direction, duration):
+    #     # TODO
+    #     pass
+    #
+    # def setpark(self):
+    #     # TODO
+    #     pass
+    #
+    # def slewtoaltaz(self, altitude, azimuth):
+    #     # TODO
+    #     pass
+    #
+    # def slewtoaltazasync(self, altitude, azimuth):
+    #     # TODO
+    #     pass
+    #
+    # def slewtocoordinates(self, right_ascension, declination):
+    #     # TODO
+    #     pass
+    #
+    # def slewtocoordinatesasync(self, right_ascension, declination):
+    #     # TODO
+    #     pass
+    #
+    # def slewtotarget(self):
+    #     # TODO
+    #     pass
+    #
+    # def slewtotargetasync(self):
+    #     # TODO
+    #     pass
+    #
+    # def synctoaltaz(self, altitude, azimuth):
+    #     # TODO
+    #     pass
+    #
+    # def synctocoordinates(self, right_ascension, declination):
+    #     # TODO
+    #     pass
+    #
+    # def synctotarget(self):
+    #     # TODO
+    #     pass
+    #
+    # def unpark(self):
+    #     # TODO
+    #     pass
+
 
 # def alignment_mode(self):
 # def altitude(self):

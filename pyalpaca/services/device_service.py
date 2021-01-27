@@ -30,7 +30,38 @@ from .config import getDriverInstance
 
 from .httpresponses import HttpSuccessResponse, HttpErrorResponse
 
+
 class DeviceService(pyrestful.rest.RestHandler):
+    def get_resource_better(self, device_type, device_number, foo):
+        driver = getDriverInstance(device_type, device_number)
+        response = None
+
+        try:
+            if (driver is None):
+                raise ValueError("Driver not loaded. Check your server configuration.")
+
+            value = foo(driver)
+
+            response = {
+                "ClientTransactionID": 0,
+                "ServerTransactionID": 0,
+                "ErrorNumber": 0,
+                "ErrorMessage": ""
+            }
+
+            if not (value is None):
+                print("Setting value = " + str(value))
+                response["Value"] = value
+
+            pass
+        except Exception as exc:
+            response = {
+                "Value": str(exc)
+            }
+            self.set_status(500, str(exc))
+        finally:
+            self.write(response)
+            self.finish()
 
     def get_resource(self, device_type, device_number, resource, *args):
         print("Trying to get resource: " + resource)
@@ -47,6 +78,7 @@ class DeviceService(pyrestful.rest.RestHandler):
                 # might be a class instance method
                 print("Arguments passed: " + str(args))
                 value = attr(*args)
+                print("Value got: "+str(value))
             else:
                 # might be a property
                 value = attr
@@ -59,6 +91,7 @@ class DeviceService(pyrestful.rest.RestHandler):
             }
 
             if not (value is None):
+                print("Setting value = "+str(value))
                 response["Value"] = value
             
             pass
@@ -67,50 +100,71 @@ class DeviceService(pyrestful.rest.RestHandler):
                 "Value": str(exc)
             }
             self.set_status(500, str(exc))
-    
-        self.write(response)
-        self.finish()
+        finally:
+            self.write(response)
+            self.finish()
 
     def get_query_argument_for_get_request(self, argument):
         return self.request.query_arguments[argument][0].decode()
 
-    def __get_single_value_string_from_put_request(self, input_name):
+    def get_string_values_from_put_request(self, *arguments):
         # read www/x-www-form-urlencoded parameters
-
+        string_values = []
         if self.request.headers['Content-Type'] == 'application/x-www-form-urlencoded':
             values = {}
             files = {}
             parse_body_arguments('application/x-www-form-urlencoded', self.request.body, values, files)
-            value_str = values[input_name][0].decode()
-            return value_str
+            return [values[arg][0].decode() for arg in arguments]
         else:
             raise ValueError
 
     def set_one_boolean_resource(self, device_type, device_number, ascom_attribute_name, driver_attribute_name):
         try:
-            value_str = self.__get_single_value_string_from_put_request(ascom_attribute_name)
-            self.set_resource(device_type, device_number, driver_attribute_name, value_str == 'True')
+            value_str = self.get_string_values_from_put_request(ascom_attribute_name)
+            self.set_resource(device_type, device_number, driver_attribute_name, value_str[0] == 'True')
         except ValueError:
             self.set_status(400, "Value error")
 
     def set_one_integer_resource(self, device_type, device_number, ascom_attribute_name, driver_attribute_name):
         try:
-            value_str = self.__get_single_value_string_from_put_request(ascom_attribute_name)
-            self.set_resource(device_type, device_number, driver_attribute_name, int(value_str))
+            value_str = self.get_string_values_from_put_request(ascom_attribute_name)
+            self.set_resource(device_type, device_number, driver_attribute_name, int(value_str[0]))
         except ValueError:
             self.set_status(400, "Value error")
 
     def set_one_float_resource(self, device_type, device_number, ascom_attribute_name, driver_attribute_name):
         try:
-            value_str = self.__get_single_value_string_from_put_request(ascom_attribute_name)
-            self.set_resource(device_type, device_number, driver_attribute_name, float(value_str))
+            value_str = self.get_string_values_from_put_request(ascom_attribute_name)
+            self.set_resource(device_type, device_number, driver_attribute_name, float(value_str[0]))
         except ValueError:
             self.set_status(400, "Value error")
 
+    def standard_response_for_put(self, device_type, device_number, foo):
+        try:
+            driver = getDriverInstance(device_type, device_number)
+            if driver is None:
+                raise ValueError("Driver not loaded. Check your server configuration.")
+
+            foo(driver)
+
+            response = {
+                "ClientTransactionID": 0,
+                "ServerTransactionID": 0,
+                "ErrorNumber": 0,
+                "ErrorMessage": ""
+            }
+            pass
+        except Exception as exc:
+            response = {
+                "Value": str(exc)
+            }
+            self.set_status(500, str(exc))
+
+        self.write(response)
+        self.finish()
+
     def set_resource(self, device_type, device_number, resource, resource_value):
         driver = getDriverInstance(device_type, device_number)
-        response = None
-
         try:
             if (driver is None):
                 raise ValueError("Driver not loaded. Check your server configuration.")
@@ -130,10 +184,9 @@ class DeviceService(pyrestful.rest.RestHandler):
                 "Value": str(exc)
             }
             self.set_status(500, str(exc))
-    
-        self.write(response) 
 
-        self.finish() 
+        self.write(response)
+        self.finish()
 
     @get(_path="/api/v1/{device_type}/{device_number}/name", _types=[str, int, str], _produces=mediatypes.APPLICATION_JSON)
     def get_name(self, device_type, device_number):
