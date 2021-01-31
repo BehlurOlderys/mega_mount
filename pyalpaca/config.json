@@ -5,6 +5,12 @@
       "device_number": 0,
       "device_driver": "SimpleEQMountDriver",
       "driver_config": {}
+    },
+    {
+      "device_type": "focuser",
+      "device_number": 0,
+      "device_driver": "SimpleFocuserDriver",
+      "driver_config": {}
     }
   ]
 }

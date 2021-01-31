@@ -4,6 +4,7 @@ import services
 
 from services.dome_service import DomeService
 from services.SimpleTelescopeService import SimpleTelescopeService
+from services.SimpleFocuserService import SimpleFocuserService
 from services.SimpleFilterWheelService import SimpleFilterWheelService
 from services.config import ascomConfig, initConfig
 
@@ -37,6 +38,12 @@ def instantiate_driver(config):
                 print("Choosing driver for SimpleEQMountDriver")
                 driver = SimpleEQMountDriver(config["driver_config"])
                 config['driver_instance'] = driver
+        elif config['device_type'] == 'focuser':
+            if config['device_driver'] == 'SimpleFocuserDriver':
+                from Drivers.ASCOMDriver.SimpleFocuserDriver import SimpleFocuserDriver
+                print("Choosing driver for SimpleFocuserDriver")
+                driver = SimpleFocuserDriver(config["driver_config"])
+                config['driver_instance'] = driver
 
     return driver
 
@@ -44,7 +51,8 @@ def instantiate_driver(config):
 config_services_map ={
     "dome": DomeService,
     "filterwheel": SimpleFilterWheelService,
-    "telescope": SimpleTelescopeService
+    "telescope": SimpleTelescopeService,
+    "focuser": SimpleFocuserService
 }
 
 
