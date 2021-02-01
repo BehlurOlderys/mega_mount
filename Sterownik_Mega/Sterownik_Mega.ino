@@ -35,6 +35,14 @@ void step_motor(){
   digitalWrite(X_STEP_PIN, LOW);
 }
 
+void enable_motor(){
+  digitalWrite(X_ENABLE_PIN, LOW);
+}
+
+void disable_motor(){
+  digitalWrite(X_ENABLE_PIN, HIGH);
+}
+
 void change_dir(bool const forward){
   bool const tmp_dir = dir_forward;
   dir_forward = forward;
@@ -86,7 +94,7 @@ void move_if_needed(){
   
   if (desired_position != motor_position){
     if (!is_enabled){
-      digitalWrite(X_ENABLE_PIN, HIGH);
+      enable_motor();
       is_enabled = true;
     }
     step_motor();
@@ -94,7 +102,7 @@ void move_if_needed(){
   }
   else{
     if (is_enabled){
-      digitalWrite(X_ENABLE_PIN, LOW);
+      disable_motor();
       is_enabled = false;
     }
     delay(100);
