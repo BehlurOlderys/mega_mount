@@ -39,10 +39,10 @@ def instantiate_driver(config):
                 driver = SimpleEQMountDriver(config["driver_config"])
                 config['driver_instance'] = driver
         elif config['device_type'] == 'focuser':
-            if config['device_driver'] == 'SimpleFocuserDriver':
-                from Drivers.ASCOMDriver.SimpleFocuserDriver import SimpleFocuserDriver
-                print("Choosing driver for SimpleFocuserDriver")
-                driver = SimpleFocuserDriver(config["driver_config"])
+            if config['device_driver'] == 'MegaFocuserDriver':
+                from Drivers.ASCOMDriver.MegaFocuserDriver import MegaFocuserDriver
+                print("Choosing driver for MegaFocuserDriver")
+                driver = MegaFocuserDriver(config["driver_config"])
                 config['driver_instance'] = driver
 
     return driver

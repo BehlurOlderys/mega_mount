@@ -51,4 +51,5 @@ class SimpleFocuserService(DeviceService):
 
     @put(_path="/api/v1/{device_type}/{device_number}/move", _types=[str, str], _produces=mediatypes.APPLICATION_JSON)
     def move(self, device_type, device_number):
-        super().set_one_integer_resource(device_type, device_number, "Position", "move")
+        value_str = super().get_string_values_from_put_request("Position")
+        super().standard_response_for_put(device_type, device_number, lambda driver: driver.move(int(value_str[0])))

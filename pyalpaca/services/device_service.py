@@ -32,39 +32,8 @@ from .httpresponses import HttpSuccessResponse, HttpErrorResponse
 
 
 class DeviceService(pyrestful.rest.RestHandler):
-    def get_resource_better(self, device_type, device_number, foo):
-        driver = getDriverInstance(device_type, device_number)
-        response = None
-
-        try:
-            if (driver is None):
-                raise ValueError("Driver not loaded. Check your server configuration.")
-
-            value = foo(driver)
-
-            response = {
-                "ClientTransactionID": 0,
-                "ServerTransactionID": 0,
-                "ErrorNumber": 0,
-                "ErrorMessage": ""
-            }
-
-            if not (value is None):
-                print("Setting value = " + str(value))
-                response["Value"] = value
-
-            pass
-        except Exception as exc:
-            response = {
-                "Value": str(exc)
-            }
-            self.set_status(500, str(exc))
-        finally:
-            self.write(response)
-            self.finish()
-
     def get_resource(self, device_type, device_number, resource, *args):
-        print("Trying to get resource: " + resource)
+        print("Trying to get resource: " + resource + " for device type: " + device_type)
         driver = getDriverInstance(device_type, device_number)
         response = None
 
@@ -93,8 +62,7 @@ class DeviceService(pyrestful.rest.RestHandler):
             if not (value is None):
                 print("Setting value = "+str(value))
                 response["Value"] = value
-            
-            pass
+
         except Exception as exc:
             response = {
                 "Value": str(exc)
@@ -103,6 +71,31 @@ class DeviceService(pyrestful.rest.RestHandler):
         finally:
             self.write(response)
             self.finish()
+
+    def set_resource(self, device_type, device_number, resource, resource_value):
+        driver = getDriverInstance(device_type, device_number)
+        print("Trying to set resource: " + resource + " with value " + str(resource_value) + " for device type: " + device_type)
+        try:
+            if (driver is None):
+                raise ValueError("Driver not loaded. Check your server configuration.")
+
+            # Dynamically call the method/property if it exists
+            setattr(driver, resource, resource_value)
+
+            response = {
+                "ClientTransactionID": 0,
+                "ServerTransactionID": 0,
+                "ErrorNumber": 0,
+                "ErrorMessage": ""
+            }
+        except Exception as exc:
+            response = {
+                "Value": str(exc)
+            }
+            self.set_status(500, str(exc))
+
+        self.write(response)
+        self.finish()
 
     def get_query_argument_for_get_request(self, argument):
         return self.request.query_arguments[argument][0].decode()
@@ -153,32 +146,6 @@ class DeviceService(pyrestful.rest.RestHandler):
                 "ErrorNumber": 0,
                 "ErrorMessage": ""
             }
-            pass
-        except Exception as exc:
-            response = {
-                "Value": str(exc)
-            }
-            self.set_status(500, str(exc))
-
-        self.write(response)
-        self.finish()
-
-    def set_resource(self, device_type, device_number, resource, resource_value):
-        driver = getDriverInstance(device_type, device_number)
-        try:
-            if (driver is None):
-                raise ValueError("Driver not loaded. Check your server configuration.")
-                
-            # Dynamically call the method/property if it exists 
-            setattr(driver, resource, resource_value)
-
-            response = {
-                "ClientTransactionID": 0,
-                "ServerTransactionID": 0,
-                "ErrorNumber": 0,
-                "ErrorMessage": ""
-            }
-            pass
         except Exception as exc:
             response = {
                 "Value": str(exc)

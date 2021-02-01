@@ -7,9 +7,9 @@ class SimpleFocuserDriver(MyDeviceDriver):
         self.__config = config
         self.__is_moving = False
         self.__position = 0
-        self.__maxincrement = 10
-        self.__max_step = 10
-        self.__step_size = 10.1
+        self.__maxincrement = config["maxincrement"]
+        self.__max_step = config["maxstep"]
+        self.__step_size = config["stepsize"]
         self.__temperature = 36.6
 
     @property

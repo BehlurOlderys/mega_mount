@@ -9,8 +9,13 @@
     {
       "device_type": "focuser",
       "device_number": 0,
-      "device_driver": "SimpleFocuserDriver",
-      "driver_config": {}
+      "device_driver": "MegaFocuserDriver",
+      "driver_config": {
+        "maxincrement": 100,
+        "maxstep": 10,
+        "stepsize": 5,
+        "com_port": "COM6"
+      }
     }
   ]
 }
