@@ -16,6 +16,7 @@ struct Stepper{
   }
 
 public:  
+  void halt();
   bool is_enabled() const;
   void setup_pins();
   void set_position_absolute(int32_t const new_position);  

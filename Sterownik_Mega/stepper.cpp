@@ -1,6 +1,10 @@
 #include "stepper.h"
 #include <Arduino.h>
 
+void Stepper::halt(){
+  set_position_absolute(_motor_position);
+}
+
 bool Stepper::is_enabled() const {
   return _is_enabled;
 }
