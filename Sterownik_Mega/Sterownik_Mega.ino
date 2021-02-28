@@ -1,6 +1,20 @@
-const int X_STEP_PIN = 54;
+// DEC?
+#include "stepper.h"
+
+
+const int X_STEP_PIN = 54;  // A9
 const int X_ENABLE_PIN = 38;
 const int X_DIR_PIN = 55;
+
+Stepper DEC_stepper(X_STEP_PIN, X_DIR_PIN, X_ENABLE_PIN);
+
+
+// RA?
+const int Y_STEP_PIN = 60;
+const int Y_DIR_PIN = 61;
+const int Y_ENABLE_PIN = 56;
+
+Stepper RA_stepper(Y_STEP_PIN, Y_DIR_PIN, Y_ENABLE_PIN);
 
 const int COMMAND_MAX_LENGTH = 20;
 const int COMMAND_NAME_LENGTH = 10;
@@ -18,8 +32,9 @@ void setup() {
   pinMode(X_STEP_PIN, OUTPUT);
   pinMode(X_ENABLE_PIN, OUTPUT);
   pinMode(X_DIR_PIN, OUTPUT);
-
   digitalWrite(X_ENABLE_PIN, LOW);
+
+  RA_stepper.setup_pins();
   
   dir_forward = true;
   motor_position = 0;
@@ -74,6 +89,12 @@ void handle_serial(){
   sscanf(command_string, "%s %d", command_name, &command_argument);
   if (0 == strcmp(command_name, "HALT")){
     set_position(motor_position);
+  }else if (0 == strcmp(command_name, "RA_POSITION")){
+    RA_stepper.print_position(Serial);
+  }else if (0 == strcmp(command_name, "RA_MOVE_ABS")){
+    RA_stepper.set_position_absolute(command_argument);
+  }else if (0 == strcmp(command_name, "RA_MOVE_REL")){
+    RA_stepper.set_position_relative(command_argument);
   }else if (0 == strcmp(command_name, "POSITION")){
     Serial.print("CURRENT ");
     Serial.print(motor_position);
