@@ -66,7 +66,7 @@ void setup() {
   last_time_us = current_time_us;  
   cummulative_delta_us = 0;
   perfect_angle = 0;
-  Serial.println("INIT_OK")
+  Serial.println("INIT_OK");
 }
 
 void action(int pin_to_set, int time_to_move){
@@ -154,7 +154,7 @@ void autonomous_control(){
      cummulative_delta_us = new_cummulative % STEP_INTERVAL_MICROS;
      const long int error_angle = perfect_angle - current_angle;
      print_state(error_angle);
-//    command_control(error_angle);
+     command_control(error_angle);
    }
 
    print_counter++;
