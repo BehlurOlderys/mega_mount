@@ -2,14 +2,30 @@ import serial
 import sys
 from struct import unpack
 
+ENCODER_TYPE_ID = 1
+
+
+def deserialize_encoder(raw_payload, logger):
+    (position, timestamp, raw_name) = unpack("iI4s", raw_payload)
+    name = raw_name.decode('UTF-8').strip()
+    ### logger part to be refactored! ###
+    logger.write(f"{timestamp},{position},{raw_name},\n")
+    print(f"Name = {name}, position = {position}, timestamp = {timestamp}")
+    #####################################
+    return position, timestamp, name
+
+
+map_of_deserializers = {
+  ENCODER_TYPE_ID: deserialize_encoder
+}
+
+
 def unpack_type(type_id, raw_payload):
-    if type_id == 1:
-        (position, timestamp, raw_name) = unpack("iI5s", raw_payload)
-        name = raw_name.decode('UTF-8').strip()
-        print("Name = " + name[:-1] + ", position = " + str(position) + ", timestamp = " + str(timestamp))
+    deserializer = map_of_deserializers[type_id]
+    return deserializer(raw_payload)
 
 
-class EncoderReader:
+class SerialReader:
     def __init__(self):
         self.log_file = open("log_file_fast.txt", "w", buffering=1)
         self.ser = serial.Serial(
@@ -33,17 +49,16 @@ class EncoderReader:
                     type_id = int(self.ser.readline())
                     data_size = int(self.ser.readline())
                     raw_payload = self.ser.read(data_size)
-                    unpack_type(type_id, raw_payload)
+                    unpack_type(type_id, raw_payload, self.log_file)
 
             except Exception as e:
                 print("Exception: " + str(e))
                 continue
 
-            # self.log_file.write(f"{self.current_time},{self.current_position},{self.current_error},\n")
             sys.stdout.write(f"\rmessage = {message}     ")
             sys.stdout.flush()
 
 
-reader = EncoderReader()
+reader = SerialReader()
 reader.loop()
 

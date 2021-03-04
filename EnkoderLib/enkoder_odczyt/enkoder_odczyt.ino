@@ -1,7 +1,7 @@
 #include "Enkoder.h"
 #include "Arduino.h"
 
-Enkoder enkoder_ra(A1, A2);
+Enkoder enkoder_ra(A1, A2, "ENRA");
 
 void setup() {
   Serial.begin(115200);

@@ -1,4 +1,5 @@
 #include <Arduino.h>
+#include "Serializer.h"
 
 int8_t const BAD = 0;
 int8_t const table_of_states[4][4] = {
@@ -9,46 +10,28 @@ int8_t const table_of_states[4][4] = {
 };
 
 
-static int8_t const EncoderDebugNameSize = 4u;
-
-struct EncoderDebugData{
-  EncoderDebugData(const char* encoder_four_letter_name) : _name{0} {
-    strncpy(_name, encoder_four_letter_name, EncoderDebugNameSize);
-  }
-  int32_t _position;
-  uint32_t _timestamp;
-  char _name[EncoderDebugNameSize+1];
-};
-
-struct DebugFrame{
-  
-};
-
-template <typename DataType>
-uint8_t type_id(){ return 0; }
-
-template <>
-uint8_t type_id<EncoderDebugData>(){ return 1; }
-
-template <typename SerialType, typename DataType>
-void Serialize(SerialType& serial, DataType const& data){
-  char data_array[sizeof(DataType)];
-  memcpy(data_array, &data, sizeof(DataType));
-  serial.println("BHS");
-  serial.println(type_id<DataType>());
-  serial.println(sizeof(DataType));
-  serial.write(data_array, sizeof(DataType));
-  serial.println();
-}
+static int8_t const ENCODER_NAME_SIZE = 4u;
 
 struct Enkoder{
-  Enkoder(int8_t channel_a_pin, int8_t channel_b_pin):
+  Enkoder(int8_t channel_a_pin, int8_t channel_b_pin, const char* name_str):
     _channel_a_pin(channel_a_pin),
     _channel_b_pin(channel_b_pin),
     _current_position(0),
     _previous_index(0),
-    _last_timestamp(0)
-  {}
+    _last_timestamp(0),
+    _only_four_letters_name()
+  {
+    memset(_only_four_letters_name, 0, sizeof(_only_four_letters_name));
+    strncpy(_only_four_letters_name, name_str, ENCODER_NAME_SIZE);
+  }
+
+  int32_t get_current_position() const {
+    return _current_position;
+  }
+
+  const char* get_name() const {
+    return _only_four_letters_name;
+  }  
 
   void reset_encoder(){
     _current_position = 0;
@@ -84,5 +67,20 @@ struct Enkoder{
   int32_t _current_position;
   int8_t _previous_index;
   uint32_t _last_timestamp;
+  char _only_four_letters_name[ENCODER_NAME_SIZE+1];
 };
+
+static int8_t const ENCODER_TYPE_ID = 1u;
+
+struct EncoderDebugData{
+  EncoderDebugData(const char* encoder_four_letter_name) : _name{0} {
+    memcpy(_name, encoder_four_letter_name, sizeof(_name));
+  }
+  int32_t _position;
+  uint32_t _timestamp;
+  char _name[ENCODER_NAME_SIZE];
+};
+
+template <>
+uint8_t type_id<EncoderDebugData>(){ return ENCODER_TYPE_ID; }
 
