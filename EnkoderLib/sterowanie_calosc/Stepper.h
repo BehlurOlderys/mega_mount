@@ -9,11 +9,26 @@ uint32_t const MINIMAL_DYNAMIC_VALUE_OF_STEPPING_DELAY_US = 50; // 50us is safe 
 bool const DESIRED_POSITION_REACHED = true;
 bool const DESIRED_POSITION_NOT_REACHED = false;
 uint8_t const STEPPER_NAME_SIZE = 4u;
+static int8_t const STEPPER_TYPE_ID = 2u;
+
+
+struct StepperDebugData{
+  StepperDebugData(const char* stepper_four_letter_name);
+  int16_t _delay_us;
+  bool    _dir_forward;
+  int32_t _motor_position;
+  int32_t _desired_position;
+  bool    _is_enabled;  
+  bool    _is_slewing;  
+  char    _name[STEPPER_NAME_SIZE];
+};
+
 
 struct Stepper{
        Stepper(uint8_t const step_pin, uint8_t const dir_pin, uint8_t const en_pin, const char* name_short);
   void halt();
   bool is_enabled() const;
+  bool is_slewing() const;
   void setup_pins();
   void set_position_absolute(int32_t const new_position);  
   void set_position_relative(int32_t const position_delta);
@@ -22,11 +37,15 @@ struct Stepper{
   bool runnable_slew_to_desired();
   void step_motor();
   template <typename Printer>
-  void print_position(Printer& printer){
-    printer.print("CURRENT ");
-    printer.print(_motor_position);
-    printer.print(" DESIRED ");
-    printer.println(_desired_position);
+  void print_to(Printer& printer) const{
+    StepperDebugData data_to_serialize(_only_four_letters_name);
+    data_to_serialize._delay_us = _delay_us;
+    data_to_serialize._dir_forward = _dir_forward;
+    data_to_serialize._motor_position = _motor_position;
+    data_to_serialize._desired_position = _desired_position;
+    data_to_serialize._is_enabled = _is_enabled;
+    data_to_serialize._is_slewing = _is_slewing;  
+    Serialize(printer, data_to_serialize);
   }
 private:
   void enable_motor();
@@ -42,6 +61,7 @@ private:
   int32_t _motor_position;
   int32_t _desired_position;
   bool    _is_enabled;  
+  bool    _is_slewing;
   char    _only_four_letters_name[STEPPER_NAME_SIZE+1];
 };
 

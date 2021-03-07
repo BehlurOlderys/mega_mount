@@ -39,7 +39,7 @@ void Enkoder::setup_encoder(){
   reset_encoder();
 }
 
-void Enkoder::update_position(){
+void Enkoder::runnable_update_position(){
   uint8_t const channelA = uint16_t(analogRead(_channel_a_pin) > 512);
   uint8_t const channelB = uint16_t(analogRead(_channel_b_pin) > 512);
   uint8_t const current_index = 2*channelA + channelB;

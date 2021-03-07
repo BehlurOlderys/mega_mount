@@ -21,7 +21,7 @@ struct Enkoder{
   const char* get_name() const;
   void        reset_encoder();
   void        setup_encoder();
-  void        update_position();
+  void        runnable_update_position();
   template <typename Printer>
   void        print_to(Printer& printer) const{
     EncoderDebugData data_to_serialize(_only_four_letters_name);
