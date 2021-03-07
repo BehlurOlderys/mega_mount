@@ -5,6 +5,11 @@
 const uint8_t X_STEP_PIN = 54;  // A9
 const uint8_t X_ENABLE_PIN = 38;
 const uint8_t X_DIR_PIN = 55;
+
+const uint8_t Y_STEP_PIN = 60;
+const uint8_t Y_DIR_PIN = 61;
+const uint8_t Y_ENABLE_PIN = 56;
+
 const uint8_t AUX_A_PIN = A1;// TODO! for mega!
 const uint8_t AUX_B_PIN = A2; // TODO!
 
@@ -16,6 +21,7 @@ char command_trash[COMMAND_MAX_LENGTH];
 
 Enkoder enkoder_ra(AUX_A_PIN, AUX_B_PIN, "ENRA");
 Stepper stepper_ra(X_STEP_PIN, X_DIR_PIN, X_ENABLE_PIN, "STRA");
+Stepper stepper_de(Y_STEP_PIN, Y_DIR_PIN, Y_ENABLE_PIN, "STDE");
 
 void handle_unknown_command(){
   Serial.print("UNKNOWN COMMAND: ");
@@ -42,22 +48,91 @@ void handle_serial(){
   }
 }
 
-int counter = 0;
+void BoundEncoderRaUpdateRunnable(){
+  enkoder_ra.runnable_update_position();
+}
+
+int encoder_ra_print_counter = 0;
+int step_ra_print_counter = 0;
+int step_de_print_counter = 0;
+
+
+void BoundEncoderRaPrintRunnable(){
+  if (encoder_ra_print_counter >= 1000){
+    enkoder_ra.print_to(Serial);
+    encoder_ra_print_counter = 0;
+  }
+  encoder_ra_print_counter++;
+}
+
+void BoundStepperRaPrintRunnable(){
+  if (step_ra_print_counter >= 1000){
+    stepper_ra.print_to(Serial);
+    step_ra_print_counter = 0;
+  }
+  step_ra_print_counter++;
+}
+
+void BoundStepperDecPrintRunnable(){
+  if (step_de_print_counter >= 1000){
+    stepper_de.print_to(Serial);
+    step_de_print_counter = 0;
+  }
+  step_de_print_counter++;
+}
+
+uint32_t last_step_ms = 0;
+static uint32_t const calculated_delay_ms = 40;
+uint32_t expected_interval_ms = calculated_delay_ms;
+
+void BoundStepperRaStepSidereal(){
+  if (stepper_ra.is_slewing()){
+    return;
+  }
+  uint32_t const current_ms = millis();
+  uint32_t const current_interval_ms = current_ms - last_step_ms;
+  if(current_interval_ms >= expected_interval_ms){
+    stepper_ra.step_motor();
+    last_step_ms = current_ms;
+    expected_interval_ms = 2*expected_interval_ms - current_interval_ms;
+  }
+}
+
+void BoundStepperRaSlew(){
+  if (!stepper_ra.is_slewing()){
+    return;
+  }
+  stepper_ra.runnable_slew_to_desired();
+}
+
+void BoundStepperDecSlew(){
+  if (!stepper_de.is_slewing()){
+    return;
+  }
+  stepper_de.runnable_slew_to_desired();
+}
 
 void handle_runnables(){
-    enkoder_ra.runnable_update_position();
-  if (counter >= 1000){
-    enkoder_ra.print_to(Serial);
-    counter = 0;
-  }
+  BoundStepperRaPrintRunnable();
+  BoundStepperDecPrintRunnable();
+  
+  BoundEncoderRaPrintRunnable();
+  BoundEncoderRaUpdateRunnable();
+  BoundStepperRaStepSidereal();
+  BoundStepperRaSlew();
+  BoundStepperDecSlew();
+}
 
-  counter++;
+void handle_events(){
+  
 }
 
 void setup() {
   Serial.begin(115200);
   enkoder_ra.setup_encoder();
   stepper_ra.setup_pins();
+  stepper_de.setup_pins();
+  last_step_ms = millis();
 }
 
 void loop() {
@@ -65,4 +140,5 @@ void loop() {
     handle_serial();
   }
   handle_runnables();
+  handle_events();
 }

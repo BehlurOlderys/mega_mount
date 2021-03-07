@@ -1,6 +1,18 @@
 #include "Stepper.h"
 #include <Arduino.h>
 
+StepperDebugData::StepperDebugData(const char* stepper_four_letter_name):
+  _delay_us(0),
+  _dir_forward(false),
+  _motor_position(0),
+  _desired_position(0),
+  _is_enabled(false),
+  _is_slewing(false),
+  _name{0}
+{
+  memcpy(_name, stepper_four_letter_name, sizeof(_name));
+}
+
 Stepper::Stepper(uint8_t const step_pin, uint8_t const dir_pin, uint8_t const en_pin, const char* name_short):
    _step_pin(step_pin),
    _dir_pin(dir_pin),
@@ -42,6 +54,7 @@ void Stepper::set_position_absolute(int32_t const new_position){
   _desired_position = new_position;
   bool const is_forward = (delta > 0);
   change_dir(is_forward);
+  _is_slewing = true;
 }
 
 void Stepper::set_position_relative(int32_t const position_delta){
@@ -56,7 +69,6 @@ const char* Stepper::get_name() const {
 bool Stepper::runnable_slew_to_desired(){
   if (_desired_position != _motor_position){
     step_motor();
-    _is_slewing = true;
     return DESIRED_POSITION_NOT_REACHED;
   }
   _is_slewing = false;
