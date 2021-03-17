@@ -1,6 +1,7 @@
 #include "Enkoder.h"
 #include "Stepper.h"
 #include "Arduino.h"
+#include "Config.h"
 
 const uint8_t X_STEP_PIN = 54;  // A9
 const uint8_t X_ENABLE_PIN = 38;
@@ -9,6 +10,10 @@ const uint8_t X_DIR_PIN = 55;
 const uint8_t Y_STEP_PIN = 60;
 const uint8_t Y_DIR_PIN = 61;
 const uint8_t Y_ENABLE_PIN = 56;
+
+const uint8_t Z_STEP_PIN = 46;
+const uint8_t Z_DIR_PIN = 48;
+const uint8_t Z_ENABLE_PIN = 62;
 
 const uint8_t AUX_A_PIN = A1;// TODO! for mega!
 const uint8_t AUX_B_PIN = A2; // TODO!
@@ -20,8 +25,9 @@ char command_name[COMMAND_NAME_LENGTH];
 char command_trash[COMMAND_MAX_LENGTH];
 
 Enkoder enkoder_ra(AUX_A_PIN, AUX_B_PIN, "ENRA");
-Stepper stepper_ra(X_STEP_PIN, X_DIR_PIN, X_ENABLE_PIN, "STRA");
-Stepper stepper_de(Y_STEP_PIN, Y_DIR_PIN, Y_ENABLE_PIN, "STDE");
+Stepper stepper_ra(Y_STEP_PIN, Y_DIR_PIN, Y_ENABLE_PIN, "STRA");
+Stepper stepper_focuser(X_STEP_PIN, X_DIR_PIN, X_ENABLE_PIN, "FOCU");
+Stepper stepper_de(Z_STEP_PIN, Z_DIR_PIN, Z_ENABLE_PIN, "STDE");
 
 void handle_unknown_command(){
   Serial.print("UNKNOWN COMMAND: ");
@@ -38,11 +44,19 @@ void handle_serial(){
   sscanf(command_string, "%s %d", command_name, &command_argument);
   if (0 == strcmp(command_name, "HALT")){
   }else if (0 == strcmp(command_name, "RA_POSITION")){
+    stepper_ra.print_to(Serial);
   }else if (0 == strcmp(command_name, "RA_MOVE_ABS")){
   }else if (0 == strcmp(command_name, "RA_HALT")){
   }else if (0 == strcmp(command_name, "RA_MOVE_REL")){
-  }else if (0 == strcmp(command_name, "POSITION")){
-  }else if (0 == strcmp(command_name, "MOVE")){
+    stepper_ra.set_position_relative(command_argument);
+  }else if (0 == strcmp(command_name, "FO_POSITION")){
+    stepper_focuser.print_to(Serial);
+  }else if (0 == strcmp(command_name, "FO_MOVE_REL")){
+    stepper_focuser.set_position_relative(command_argument);
+  }else if (0 == strcmp(command_name, "DE_POSITION")){
+    stepper_de.print_to(Serial);
+  }else if (0 == strcmp(command_name, "DE_MOVE_REL")){
+    stepper_de.set_position_relative(command_argument);
   }else{
     handle_unknown_command();  
   }
@@ -105,6 +119,13 @@ void BoundStepperRaSlew(){
   stepper_ra.runnable_slew_to_desired();
 }
 
+void BoundStepperFocuserSlew(){
+  if (!stepper_focuser.is_slewing()){
+    return;
+  }
+  stepper_focuser.runnable_slew_to_desired();
+}
+
 void BoundStepperDecSlew(){
   if (!stepper_de.is_slewing()){
     return;
@@ -113,12 +134,13 @@ void BoundStepperDecSlew(){
 }
 
 void handle_runnables(){
-  BoundStepperRaPrintRunnable();
-  BoundStepperDecPrintRunnable();
-  
-  BoundEncoderRaPrintRunnable();
-  BoundEncoderRaUpdateRunnable();
-  BoundStepperRaStepSidereal();
+  BoundStepperFocuserSlew();
+//  BoundStepperRaPrintRunnable();
+//  BoundStepperDecPrintRunnable();
+//  
+//  BoundEncoderRaPrintRunnable();
+//  BoundEncoderRaUpdateRunnable();
+//  BoundStepperRaStepSidereal();
   BoundStepperRaSlew();
   BoundStepperDecSlew();
 }
@@ -129,9 +151,10 @@ void handle_events(){
 
 void setup() {
   Serial.begin(115200);
-  enkoder_ra.setup_encoder();
+//  enkoder_ra.setup_encoder();
   stepper_ra.setup_pins();
   stepper_de.setup_pins();
+  stepper_focuser.setup_pins();
   last_step_ms = millis();
 }
 
