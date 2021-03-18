@@ -4,8 +4,8 @@
 #include <stdint.h>
 #include "Serializer.h"
 
-uint32_t const MINIMAL_STATIC_VALUE_OF_STEPPING_DELAY_US = 1000; // 1ms is safe for starting from 0
-uint32_t const MINIMAL_DYNAMIC_VALUE_OF_STEPPING_DELAY_US = 50; // 50us is safe to drive
+uint16_t const MINIMAL_STATIC_VALUE_OF_STEPPING_DELAY_US = 1000; // 1ms is safe for starting from 0
+uint16_t const MINIMAL_DYNAMIC_VALUE_OF_STEPPING_DELAY_US = 50; // 50us is safe to drive
 bool const DESIRED_POSITION_REACHED = true;
 bool const DESIRED_POSITION_NOT_REACHED = false;
 uint8_t const STEPPER_NAME_SIZE = 4u;
@@ -14,10 +14,10 @@ static int8_t const STEPPER_TYPE_ID = 2u;
 
 struct StepperDebugData{
   StepperDebugData(const char* stepper_four_letter_name);
-  int16_t _delay_us;
-  bool    _dir_forward;
   int32_t _motor_position;
   int32_t _desired_position;
+  uint16_t _delay_us;
+  bool    _dir_forward;
   bool    _is_enabled;  
   bool    _is_slewing;  
   char    _name[STEPPER_NAME_SIZE];
@@ -56,7 +56,7 @@ private:
   uint8_t const _dir_pin;
   uint8_t const _en_pin;
 
-  int16_t _delay_us;
+  uint16_t _delay_us;
   bool    _dir_forward;
   int32_t _motor_position;
   int32_t _desired_position;

@@ -2,7 +2,7 @@
 #define BHS_SERIALIZER_H
 
 template <typename DataType>
-uint8_t type_id(){ return 0; }
+uint8_t type_id(){ return 2; }
 
 template <typename SerialType, typename DataType>
 void Serialize(SerialType& serial, DataType const& data){

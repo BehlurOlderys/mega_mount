@@ -2,10 +2,10 @@
 #include <Arduino.h>
 
 StepperDebugData::StepperDebugData(const char* stepper_four_letter_name):
-  _delay_us(0),
-  _dir_forward(false),
   _motor_position(0),
   _desired_position(0),
+  _delay_us(0),
+  _dir_forward(false),
   _is_enabled(false),
   _is_slewing(false),
   _name{0}
@@ -101,4 +101,7 @@ void Stepper::change_dir(bool const forward){
   _dir_forward = forward;
   digitalWrite(_dir_pin, (_dir_forward ? HIGH : LOW));
 }
+
+template <>
+uint8_t type_id<StepperDebugData>(){ return STEPPER_TYPE_ID; }
 

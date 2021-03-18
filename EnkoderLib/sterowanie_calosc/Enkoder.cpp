@@ -55,7 +55,6 @@ EncoderDebugData::EncoderDebugData(const char* encoder_four_letter_name) :
   memcpy(_name, encoder_four_letter_name, sizeof(_name));
 }
 
-
 template <>
 uint8_t type_id<EncoderDebugData>(){ return ENCODER_TYPE_ID; }
 

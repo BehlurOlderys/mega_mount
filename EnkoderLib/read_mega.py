@@ -3,21 +3,26 @@ import sys
 from struct import unpack
 
 ENCODER_TYPE_ID = 1
+STEPPER_TYPE_ID = 2
 
 
 def deserialize_encoder(raw_payload, logger):
     (position, timestamp, raw_name) = unpack("iI4s", raw_payload)
     name = raw_name.decode('UTF-8').strip()
     ### logger part to be refactored! ###
-    logger.write(f"{timestamp},{position},{raw_name},\n")
+    logger.write(f"{raw_name},{timestamp},{position},\n")
     print(f"Name = {name}, position = {position}, timestamp = {timestamp}")
     #####################################
     return position, timestamp, name
 
+
 def deserialize_stepper(raw_payload, logger):
-    (delay, direction, position, desired, is_enabled, is_slewing, raw_name) = unpack("i?II??4s", raw_payload)
+    (delay, direction, position, desired, is_enabled, is_slewing, raw_name) = unpack("i?II??4s")
     name = raw_name.decode('UTF-8').strip()
-    logger.write(f"{timestamp},{position},{raw_name},\n")
+    logger.write(f"{raw_name},{delay},{direction},{position},{desired},{is_enabled},{is_slewing},\n")
+    print(f"Name = {name}, is_slewing = {is_slewing}, direction_forward = {direction}")
+    #####################################
+    return position, is_slewing, direction
 
 map_of_deserializers = {
   ENCODER_TYPE_ID: deserialize_encoder,

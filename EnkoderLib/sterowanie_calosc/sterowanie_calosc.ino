@@ -1,7 +1,14 @@
-#include "Enkoder.h"
 #include "Stepper.h"
+#include "Enkoder.h"
 #include "Arduino.h"
 #include "Config.h"
+
+enum RaStateType{
+  TRACKING,
+  NOT_TRACKING
+};
+
+RaStateType ra_state;
 
 const uint8_t X_STEP_PIN = 54;  // A9
 const uint8_t X_ENABLE_PIN = 38;
@@ -42,21 +49,38 @@ void handle_serial(){
   
   Serial.readBytesUntil('\n', command_string, COMMAND_MAX_LENGTH);
   sscanf(command_string, "%s %d", command_name, &command_argument);
-  if (0 == strcmp(command_name, "HALT")){
+  // RIGHT ASCENSION AXIS:
+  if       (0 == strcmp(command_name, "RA_HALT")){
+    stepper_ra.halt();
   }else if (0 == strcmp(command_name, "RA_POSITION")){
     stepper_ra.print_to(Serial);
   }else if (0 == strcmp(command_name, "RA_MOVE_ABS")){
-  }else if (0 == strcmp(command_name, "RA_HALT")){
+    // todo
   }else if (0 == strcmp(command_name, "RA_MOVE_REL")){
     stepper_ra.set_position_relative(command_argument);
-  }else if (0 == strcmp(command_name, "FO_POSITION")){
-    stepper_focuser.print_to(Serial);
-  }else if (0 == strcmp(command_name, "FO_MOVE_REL")){
-    stepper_focuser.set_position_relative(command_argument);
+  }else if (0 == strcmp(command_name, "RA_TRACK_ON")){
+    ra_state = TRACKING;
+  }else if (0 == strcmp(command_name, "RA_TRACK_OFF")){
+    ra_state = NOT_TRACKING;
+  }else if (0 == strcmp(command_name, "IS_TRACKING")){
+    bool const is_tracking = (TRACKING == ra_state);
+    Serial.println(is_tracking);
+  } // DECLINATION AXIS:
+   else if (0 == strcmp(command_name, "DE_HALT")){
+    stepper_de.halt();
   }else if (0 == strcmp(command_name, "DE_POSITION")){
     stepper_de.print_to(Serial);
+  }else if (0 == strcmp(command_name, "DE_MOVE_ABS")){
+    // todo
   }else if (0 == strcmp(command_name, "DE_MOVE_REL")){
     stepper_de.set_position_relative(command_argument);
+  } // FOCUSER:
+   else if (0 == strcmp(command_name, "FO_POSITION")){
+    stepper_focuser.print_to(Serial);
+  }else if (0 == strcmp(command_name, "FO_HALT")){
+    stepper_focuser.halt();
+  }else if (0 == strcmp(command_name, "FO_MOVE_REL")){
+    stepper_focuser.set_position_relative(command_argument);
   }else{
     handle_unknown_command();  
   }
@@ -95,20 +119,20 @@ void BoundStepperDecPrintRunnable(){
   step_de_print_counter++;
 }
 
-uint32_t last_step_ms = 0;
-static uint32_t const calculated_delay_ms = 40;
-uint32_t expected_interval_ms = calculated_delay_ms;
+uint32_t ra_last_step_us = 0;
+static uint32_t const ra_calculated_delay_us = 19986;
+uint32_t ra_expected_interval_us = ra_calculated_delay_us;
 
 void BoundStepperRaStepSidereal(){
-  if (stepper_ra.is_slewing()){
+  if (ra_state != TRACKING){
     return;
   }
-  uint32_t const current_ms = millis();
-  uint32_t const current_interval_ms = current_ms - last_step_ms;
-  if(current_interval_ms >= expected_interval_ms){
+  uint32_t const current_us = micros();
+  uint32_t const current_interval_us = current_us - ra_last_step_us;
+  if(current_interval_us >= ra_expected_interval_us){
     stepper_ra.step_motor();
-    last_step_ms = current_ms;
-    expected_interval_ms = 2*expected_interval_ms - current_interval_ms;
+    ra_last_step_us = current_us;
+    ra_expected_interval_us = ra_calculated_delay_us + ra_expected_interval_us - current_interval_us;
   }
 }
 
@@ -135,14 +159,14 @@ void BoundStepperDecSlew(){
 
 void handle_runnables(){
   BoundStepperFocuserSlew();
+  BoundStepperRaSlew();
+  BoundStepperDecSlew();
 //  BoundStepperRaPrintRunnable();
 //  BoundStepperDecPrintRunnable();
 //  
 //  BoundEncoderRaPrintRunnable();
 //  BoundEncoderRaUpdateRunnable();
-//  BoundStepperRaStepSidereal();
-  BoundStepperRaSlew();
-  BoundStepperDecSlew();
+  BoundStepperRaStepSidereal();
 }
 
 void handle_events(){
@@ -155,7 +179,8 @@ void setup() {
   stepper_ra.setup_pins();
   stepper_de.setup_pins();
   stepper_focuser.setup_pins();
-  last_step_ms = millis();
+  ra_last_step_us = micros();
+  ra_state = NOT_TRACKING;
 }
 
 void loop() {
