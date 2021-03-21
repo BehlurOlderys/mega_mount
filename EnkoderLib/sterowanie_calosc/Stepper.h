@@ -29,11 +29,16 @@ struct Stepper{
   void halt();
   bool is_enabled() const;
   bool is_slewing() const;
+  bool is_moving() const;
   void setup_pins();
   void set_position_absolute(int32_t const new_position);  
   void set_position_relative(int32_t const position_delta);
   const char* get_name() const;
-  
+
+  void change_dir(bool const forward);
+  void start_moving();
+  void stop_moving();
+  void runnable_move();
   bool runnable_slew_to_desired();
   void step_motor();
   template <typename Printer>
@@ -50,7 +55,6 @@ struct Stepper{
 private:
   void enable_motor();
   void disable_motor();
-  void change_dir(bool const forward);
   
   uint8_t const _step_pin;
   uint8_t const _dir_pin;
@@ -62,6 +66,7 @@ private:
   int32_t _desired_position;
   bool    _is_enabled;  
   bool    _is_slewing;
+  bool    _is_moving;
   char    _only_four_letters_name[STEPPER_NAME_SIZE+1];
 };
 

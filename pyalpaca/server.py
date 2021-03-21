@@ -19,7 +19,7 @@ def instantiate_driver(config):
     driver = config['driver_instance']
     if driver is None:
         if config['device_type'] == 'dome':
-            # TODO  dynamically instanciate the drivers
+            # TODO  dynamically instantiate the drivers
         
             if config['device_driver'] == 'MyASCOMDomeDriver':
                 from Drivers.ASCOMDriver.MyDomeDriver import MyDomeDriver
@@ -33,10 +33,15 @@ def instantiate_driver(config):
                 config['driver_instance'] = driver
 
         elif config['device_type'] == 'telescope':
-            if config['device_driver'] == 'SimpleEQMountDriver':
+            if config['device_driver'] == 'DummyMountDriver':
                 from Drivers.ASCOMDriver.SimpleEQMountDriver import SimpleEQMountDriver
                 print("Choosing driver for SimpleEQMountDriver")
                 driver = SimpleEQMountDriver(config["driver_config"])
+                config['driver_instance'] = driver
+            if config['device_driver'] == 'MegaMountDriver':
+                from Drivers.ASCOMDriver.MegaMountDriver import MegaMountDriver
+                print("Choosing driver for MegaMountDriver")
+                driver = MegaMountDriver(config["driver_config"])
                 config['driver_instance'] = driver
         elif config['device_type'] == 'focuser':
             if config['device_driver'] == 'MegaFocuserDriver':

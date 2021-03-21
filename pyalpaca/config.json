@@ -2,9 +2,11 @@
   "drivers": [
     {
       "device_type": "telescope",
-      "device_number": 0,
-      "device_driver": "SimpleEQMountDriver",
-      "driver_config": {}
+      "device_number": 1,
+      "device_driver": "MegaMountDriver",
+      "driver_config": {
+        "com_port": "COM6"
+      }
     },
     {
       "device_type": "focuser",

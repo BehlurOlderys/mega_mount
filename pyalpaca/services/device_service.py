@@ -50,6 +50,7 @@ class DeviceService(pyrestful.rest.RestHandler):
                 print("Value got: "+str(value))
             else:
                 # might be a property
+                print(f"Value is a property: {attr}")
                 value = attr
 
             response = {
@@ -60,7 +61,7 @@ class DeviceService(pyrestful.rest.RestHandler):
             }
 
             if not (value is None):
-                print("Setting value = "+str(value))
+                print("Setting value in response = "+str(value))
                 response["Value"] = value
 
         except Exception as exc:

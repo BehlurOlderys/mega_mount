@@ -19,7 +19,6 @@ class SimpleEQMountDriver(MyDeviceDriver):
         self.__slewsettletime = 0.0
         self.__targetdeclination = 0.0
         self.__targetrightascension = 0.0
-        self.__tracking = False
         self.__tracking_rate = 0
         self.__utcdate = ""
 
@@ -85,7 +84,7 @@ class SimpleEQMountDriver(MyDeviceDriver):
 
     @property
     def can_slew(self):
-        return False
+        return True
 
     @property
     def can_slew_alt_az(self):
@@ -185,7 +184,7 @@ class SimpleEQMountDriver(MyDeviceDriver):
 
     @property
     def tracking(self):
-        return self.__tracking
+        return False
 
     @property
     def tracking_rate(self):
@@ -272,7 +271,7 @@ class SimpleEQMountDriver(MyDeviceDriver):
 
     @tracking.setter
     def tracking(self, value):
-        self.__tracking = value
+        print(f"Base class setting tracking to {value}")
 
     @tracking_rate.setter
     def tracking_rate(self, value):
@@ -283,10 +282,12 @@ class SimpleEQMountDriver(MyDeviceDriver):
         self.__utcdate = value
 
     def abortslew(self):
+        print("abort slew")
         # TODO
         pass
 
     def findhome(self):
+        print("find home")
         # TODO
         pass
 
@@ -295,53 +296,66 @@ class SimpleEQMountDriver(MyDeviceDriver):
         pass
 
     def park(self):
+        print("park")
         # TODO:
         pass
 
     def pulseguide(self, direction, duration):
+        print("pulse guide")
         # TODO
         pass
 
     def setpark(self):
+        print("set park")
         # TODO
         pass
 
     def slewtoaltaz(self, altitude, azimuth):
+        print("slew to alt/az")
         # TODO
         pass
 
     def slewtoaltazasync(self, altitude, azimuth):
+        print("slew to alt/az async")
         # TODO
         pass
 
     def slewtocoordinates(self, right_ascension, declination):
+        print("slew to ra/dec")
         # TODO
         pass
 
     def slewtocoordinatesasync(self, right_ascension, declination):
+        print("slew to ra/dec async")
         # TODO
         pass
 
     def slewtotarget(self):
+        print("slew to target")
         # TODO
         pass
 
     def slewtotargetasync(self):
+        print("slew to target async")
         # TODO
         pass
 
     def synctoaltaz(self, altitude, azimuth):
+        print("sync to alt/az")
         # TODO
         pass
 
     def synctocoordinates(self, right_ascension, declination):
+        print("sync to ra/dec")
         # TODO
         pass
 
     def synctotarget(self):
+        print("sync to target")
         # TODO
         pass
 
     def unpark(self):
+        print("unparking")
         # TODO
         pass

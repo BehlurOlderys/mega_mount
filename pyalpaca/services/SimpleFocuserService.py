@@ -1,7 +1,6 @@
 from pyrestful import mediatypes
 from pyrestful.rest import get, post, put, delete
 from .device_service import DeviceService
-from .config import getDriverInstance
 
 
 class SimpleFocuserService(DeviceService):

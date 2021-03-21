@@ -54,9 +54,15 @@ void handle_serial(){
     stepper_ra.halt();
   }else if (0 == strcmp(command_name, "RA_POSITION")){
     stepper_ra.print_to(Serial);
-  }else if (0 == strcmp(command_name, "RA_MOVE_ABS")){
+  }else if (0 == strcmp(command_name, "RA_MOVE")){
+    bool const move_forward = (command_argument > 0);
+    stepper_ra.change_dir(move_forward);
+    stepper_ra.start_moving();
+  }else if (0 == strcmp(command_name, "RA_STOP")){
+    stepper_ra.stop_moving();
+  }else if (0 == strcmp(command_name, "RA_SLEW_ABS")){
     // todo
-  }else if (0 == strcmp(command_name, "RA_MOVE_REL")){
+  }else if (0 == strcmp(command_name, "RA_SLEW_REL")){
     stepper_ra.set_position_relative(command_argument);
   }else if (0 == strcmp(command_name, "RA_TRACK_ON")){
     ra_state = TRACKING;
@@ -68,6 +74,12 @@ void handle_serial(){
   } // DECLINATION AXIS:
    else if (0 == strcmp(command_name, "DE_HALT")){
     stepper_de.halt();
+  }else if (0 == strcmp(command_name, "DE_MOVE")){
+    bool const move_forward = (command_argument > 0);
+    stepper_de.change_dir(move_forward);
+    stepper_de.start_moving();
+  }else if (0 == strcmp(command_name, "DE_STOP")){
+    stepper_de.stop_moving();
   }else if (0 == strcmp(command_name, "DE_POSITION")){
     stepper_de.print_to(Serial);
   }else if (0 == strcmp(command_name, "DE_MOVE_ABS")){
@@ -143,6 +155,20 @@ void BoundStepperRaSlew(){
   stepper_ra.runnable_slew_to_desired();
 }
 
+void BoundStepperRaMove(){
+  if (!stepper_ra.is_moving()){
+    return;
+  }
+  stepper_ra.runnable_move();
+}
+
+void BoundStepperDecMove(){
+  if (!stepper_de.is_moving()){
+    return;
+  }
+  stepper_de.runnable_move();
+}
+
 void BoundStepperFocuserSlew(){
   if (!stepper_focuser.is_slewing()){
     return;
@@ -167,6 +193,8 @@ void handle_runnables(){
 //  BoundEncoderRaPrintRunnable();
 //  BoundEncoderRaUpdateRunnable();
   BoundStepperRaStepSidereal();
+  BoundStepperRaMove();
+  BoundStepperDecMove();
 }
 
 void handle_events(){

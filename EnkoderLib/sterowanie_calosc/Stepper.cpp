@@ -23,6 +23,7 @@ Stepper::Stepper(uint8_t const step_pin, uint8_t const dir_pin, uint8_t const en
    _desired_position(0),
    _is_enabled(false),
    _is_slewing(false),
+   _is_moving(false),
    _only_four_letters_name()
 {  
   memset(_only_four_letters_name, 0, sizeof(_only_four_letters_name));
@@ -40,6 +41,10 @@ bool Stepper::is_enabled() const {
 
 bool Stepper::is_slewing() const {
   return _is_slewing;
+}
+
+bool Stepper::is_moving() const{
+  return _is_moving;
 }
 
 void Stepper::setup_pins(){
@@ -65,6 +70,19 @@ void Stepper::set_position_relative(int32_t const position_delta){
 const char* Stepper::get_name() const {
   return _only_four_letters_name;
 }  
+
+
+void Stepper::start_moving(){
+  _is_moving = true;
+}
+
+void Stepper::stop_moving(){
+  _is_moving = false;
+}
+
+void Stepper::runnable_move(){
+  step_motor();
+}
 
 bool Stepper::runnable_slew_to_desired(){
   if (_desired_position != _motor_position){
