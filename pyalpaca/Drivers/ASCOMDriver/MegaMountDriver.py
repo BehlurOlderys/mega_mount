@@ -5,6 +5,8 @@ from struct import unpack
 
 
 MOVE_THRESHOLD = 0.0001
+RA_AXIS_NUMBER = 1
+DEC_AXIS_NUMBER = 0
 
 class MegaMountDriver(SimpleEQMountDriver):
     def __init__(self, config):
@@ -53,22 +55,27 @@ class MegaMountDriver(SimpleEQMountDriver):
         print(f"Response = {message}")
         self.__tracking = value
 
-    def moveaxis(self, axis, rate):
-        if axis == 0:  # RA
+    def moveaxis(self, axis_str, rate_str):
+        axis = int(axis_str)
+        rate = float(rate_str)
+        print(f"Move axis with axis={axis} and rate={rate}")
+        if axis == RA_AXIS_NUMBER:  # DEC
             if abs(rate) < MOVE_THRESHOLD:
                 command = "RA_STOP\n"
             else:
                 direction = 1 if rate > 0 else 0
                 command = "RA_MOVE " +str(direction) +"\n"
 
+            print(f"Sending command:{command}!")
             self.__arduino.write(command.encode())
-        if axis == 1:  # DEC
+        elif axis == DEC_AXIS_NUMBER:  # DEC
             if abs(rate) < MOVE_THRESHOLD:
                 command = "DE_STOP\n"
             else:
                 direction = 1 if rate > 0 else 0
                 command = "DE_MOVE " +str(direction) +"\n"
 
+            print(f"Sending command:{command}!")
             self.__arduino.write(command.encode())
         else:
             print(f"Unknown axis: {axis}!")
