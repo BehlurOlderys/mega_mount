@@ -8,6 +8,12 @@ enum RaStateType{
   NOT_TRACKING
 };
 
+
+static uint32_t const ra_calculated_delay_us = 19986;
+uint32_t ra_expected_interval_us = ra_calculated_delay_us;
+
+uint32_t ra_last_step_us = 0;
+
 RaStateType ra_state;
 
 const uint8_t X_STEP_PIN = 54;  // A9
@@ -42,6 +48,16 @@ void handle_unknown_command(){
   Serial.println("!");  
 }
 
+void StartTrackingRA(){
+  ra_expected_interval_us = ra_calculated_delay_us;
+  ra_state = TRACKING;
+  ra_last_step_us = micros();
+}
+
+void StopTrackingRA(){
+  ra_state = NOT_TRACKING;
+}
+
 void handle_serial(){
   memset(command_string, 0, COMMAND_MAX_LENGTH);
   memset(command_name, 0, COMMAND_NAME_LENGTH);
@@ -65,9 +81,9 @@ void handle_serial(){
   }else if (0 == strcmp(command_name, "RA_SLEW_REL")){
     stepper_ra.set_position_relative(command_argument);
   }else if (0 == strcmp(command_name, "RA_TRACK_ON")){
-    ra_state = TRACKING;
+    StartTrackingRA();
   }else if (0 == strcmp(command_name, "RA_TRACK_OFF")){
-    ra_state = NOT_TRACKING;
+    StopTrackingRA();
   }else if (0 == strcmp(command_name, "IS_TRACKING")){
     bool const is_tracking = (TRACKING == ra_state);
     Serial.println(is_tracking);
@@ -130,10 +146,6 @@ void BoundStepperDecPrintRunnable(){
   }
   step_de_print_counter++;
 }
-
-uint32_t ra_last_step_us = 0;
-static uint32_t const ra_calculated_delay_us = 19986;
-uint32_t ra_expected_interval_us = ra_calculated_delay_us;
 
 void BoundStepperRaStepSidereal(){
   if (ra_state != TRACKING){
