@@ -1,4 +1,5 @@
 from .SimpleFocuserDriver import SimpleFocuserDriver
+from .MyDeviceDriver import MyDeviceDriver
 from Drivers.ComPortDistributor import ComPortDistributor
 import time
 from struct import unpack
@@ -46,6 +47,24 @@ class MegaFocuserDriver(SimpleFocuserDriver):
         print("Sending command move...")
         command = "FO_MOVE_REL "+str(position) + "\n"
         self.__arduino.write(command.encode())
+
+    @property
+    def connected(self):
+        return MyDeviceDriver.connected.fget(self)
+
+    @connected.setter
+    def connected(self, value):
+        if value == self.is_connected:
+            return
+        if value:
+            print("Sending command to go back to normal mode...")
+            self.__arduino.write(b"FO_LOW_CUR_OFF\n")
+        else:
+            print("Sending command to go into low current halt mode...")
+            self.__arduino.write(b"FO_LOW_CUR_ON\n")
+
+        MyDeviceDriver.connected.fset(self, value)
+
 
     @property
     def ismoving(self):

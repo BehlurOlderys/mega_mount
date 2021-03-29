@@ -54,6 +54,10 @@ void Stepper::setup_pins(){
   digitalWrite(_en_pin, LOW);
 }
 
+void Stepper::set_delay_us(uint32_t const delay_us){
+  _delay_us = delay_us;
+}
+
 void Stepper::set_position_absolute(int32_t const new_position){
   int32_t const delta = new_position - _desired_position;
   _desired_position = new_position;
@@ -71,6 +75,13 @@ const char* Stepper::get_name() const {
   return _only_four_letters_name;
 }  
 
+void Stepper::go_to_low_current_halt(){
+  digitalWrite(_en_pin, HIGH);
+}
+
+void Stepper::go_to_normal_operation(){
+  digitalWrite(_en_pin, LOW);
+}
 
 void Stepper::start_moving(){
   _is_moving = true;

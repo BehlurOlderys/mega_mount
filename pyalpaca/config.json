@@ -5,7 +5,7 @@
       "device_number": 1,
       "device_driver": "MegaMountDriver",
       "driver_config": {
-        "com_port": "COM6"
+        "com_port": "COM8"
       }
     },
     {
@@ -16,7 +16,7 @@
         "maxincrement": 100,
         "maxstep": 10,
         "stepsize": 5,
-        "com_port": "COM6"
+        "com_port": "COM8"
       }
     }
   ]

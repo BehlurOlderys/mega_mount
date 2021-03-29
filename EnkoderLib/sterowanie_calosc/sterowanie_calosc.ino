@@ -109,6 +109,10 @@ void handle_serial(){
     stepper_focuser.halt();
   }else if (0 == strcmp(command_name, "FO_MOVE_REL")){
     stepper_focuser.set_position_relative(command_argument);
+  }else if (0 == strcmp(command_name, "FO_LOW_CUR_ON")){
+    stepper_focuser.go_to_low_current_halt();
+  }else if (0 == strcmp(command_name, "FO_LOW_CUR_OFF")){
+    stepper_focuser.go_to_normal_operation();
   }else{
     handle_unknown_command();  
   }
@@ -221,6 +225,8 @@ void setup() {
   stepper_focuser.setup_pins();
   ra_last_step_us = micros();
   ra_state = NOT_TRACKING;
+  stepper_ra.set_delay_us(100);
+  stepper_de.set_delay_us(1000);
 }
 
 void loop() {

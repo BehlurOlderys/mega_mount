@@ -31,10 +31,13 @@ struct Stepper{
   bool is_slewing() const;
   bool is_moving() const;
   void setup_pins();
+  void set_delay_us(uint32_t const delay_us);
   void set_position_absolute(int32_t const new_position);  
   void set_position_relative(int32_t const position_delta);
   const char* get_name() const;
 
+  void go_to_low_current_halt();
+  void go_to_normal_operation();
   void change_dir(bool const forward);
   void start_moving();
   void stop_moving();
