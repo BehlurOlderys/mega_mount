@@ -2,12 +2,11 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="1ba973d6-ea99-4b4a-8ecf-f6ae06262703" name="Default Changelist" comment="">
+      <change afterPath="$PROJECT_DIR$/sharpcap_scripts/get_current_coordinates.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/EnkoderLib/sterowanie_calosc/Stepper.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/EnkoderLib/sterowanie_calosc/Stepper.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/EnkoderLib/sterowanie_calosc/Stepper.h" beforeDir="false" afterPath="$PROJECT_DIR$/EnkoderLib/sterowanie_calosc/Stepper.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/EnkoderLib/sterowanie_calosc/sterowanie_calosc.ino" beforeDir="false" afterPath="$PROJECT_DIR$/EnkoderLib/sterowanie_calosc/sterowanie_calosc.ino" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/pyalpaca/Drivers/ASCOMDriver/MegaFocuserDriver.py" beforeDir="false" afterPath="$PROJECT_DIR$/pyalpaca/Drivers/ASCOMDriver/MegaFocuserDriver.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pyalpaca/config.json" beforeDir="false" afterPath="$PROJECT_DIR$/pyalpaca/config.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pyalpaca/Drivers/ASCOMDriver/MegaMountDriver.py" beforeDir="false" afterPath="$PROJECT_DIR$/pyalpaca/Drivers/ASCOMDriver/MegaMountDriver.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pyalpaca/Drivers/ComPortDistributor.py" beforeDir="false" afterPath="$PROJECT_DIR$/pyalpaca/Drivers/ComPortDistributor.py" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -21,30 +20,9 @@
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
       <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/pyalpaca/services/device_service.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="261">
-              <caret line="83" column="19" selection-start-line="83" selection-start-column="12" selection-end-line="83" selection-end-column="19" />
-              <folding>
-                <element signature="e#634#655#0" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/pyalpaca/services/config.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="374">
-              <caret line="22" column="4" selection-start-line="22" selection-start-column="4" selection-end-line="22" selection-end-column="4" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/pyalpaca/services/SimpleTelescopeService.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="547">
+            <state relative-caret-position="4352">
               <caret line="259" selection-start-line="259" selection-end-line="259" />
               <folding>
                 <element signature="e#0#32#0" expanded="true" />
@@ -56,7 +34,7 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/pyalpaca/Drivers/ASCOMDriver/SimpleEQMountDriver.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="193">
+            <state relative-caret-position="4981">
               <caret line="293" column="8" selection-start-line="293" selection-start-column="8" selection-end-line="293" selection-end-column="8" />
             </state>
           </provider>
@@ -65,8 +43,8 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/pyalpaca/Drivers/ASCOMDriver/MegaMountDriver.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="700">
-              <caret line="68" column="48" selection-start-line="68" selection-start-column="48" selection-end-line="68" selection-end-column="48" />
+            <state relative-caret-position="102">
+              <caret line="9" selection-start-line="9" selection-end-line="9" />
               <folding>
                 <element signature="e#0#52#0" expanded="true" />
               </folding>
@@ -74,11 +52,11 @@
           </provider>
         </entry>
       </file>
-      <file pinned="false" current-in-tab="true">
+      <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/pyalpaca/config.json">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="119">
-              <caret line="7" column="25" selection-start-line="7" selection-start-column="25" selection-end-line="7" selection-end-column="25" />
+            <state relative-caret-position="357">
+              <caret line="21" column="3" selection-start-line="21" selection-start-column="3" selection-end-line="21" selection-end-column="3" />
             </state>
           </provider>
         </entry>
@@ -87,7 +65,7 @@
         <entry file="file://$PROJECT_DIR$/pyalpaca/Drivers/ASCOMDriver/SimpleFocuserDriver.py">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="51">
-              <caret line="3" column="32" lean-forward="true" selection-start-line="3" selection-start-column="32" selection-end-line="3" selection-end-column="32" />
+              <caret line="3" column="6" selection-start-line="3" selection-start-column="6" selection-end-line="3" selection-end-column="6" />
             </state>
           </provider>
         </entry>
@@ -95,8 +73,8 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/pyalpaca/services/SimpleFocuserService.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="85">
-              <caret line="5" column="32" lean-forward="true" selection-start-line="5" selection-start-column="32" selection-end-line="5" selection-end-column="32" />
+            <state relative-caret-position="51">
+              <caret line="5" column="32" selection-start-line="5" selection-start-column="32" selection-end-line="5" selection-end-column="32" />
               <folding>
                 <element signature="e#0#32#0" expanded="true" />
               </folding>
@@ -107,8 +85,8 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/pyalpaca/Drivers/ASCOMDriver/MyDeviceDriver.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="272">
-              <caret line="53" column="38" lean-forward="true" selection-start-line="53" selection-start-column="8" selection-end-line="53" selection-end-column="38" />
+            <state relative-caret-position="51">
+              <caret line="5" column="6" selection-start-line="5" selection-start-column="6" selection-end-line="5" selection-end-column="6" />
             </state>
           </provider>
         </entry>
@@ -116,11 +94,32 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/pyalpaca/Drivers/ASCOMDriver/MegaFocuserDriver.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="289">
-              <caret line="63" column="52" selection-start-line="63" selection-start-column="52" selection-end-line="63" selection-end-column="52" />
+            <state relative-caret-position="102">
+              <caret line="22" selection-start-line="22" selection-end-line="23" />
               <folding>
                 <element signature="e#0#52#0" expanded="true" />
               </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/sharpcap_scripts/get_current_coordinates.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="85">
+              <caret line="22" column="32" selection-start-line="22" selection-start-column="32" selection-end-line="22" selection-end-column="32" />
+              <folding>
+                <element signature="e#0#17#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/pyalpaca/Drivers/ComPortDistributor.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="272">
+              <caret line="16" column="42" selection-start-line="16" selection-start-column="42" selection-end-line="16" selection-end-column="42" />
             </state>
           </provider>
         </entry>
@@ -170,13 +169,14 @@
         <option value="$PROJECT_DIR$/EnkoderLib/read_mega.py" />
         <option value="$PROJECT_DIR$/sterownik_eq32_pid/read_encoder_ra.py" />
         <option value="$PROJECT_DIR$/pyalpaca/services/SimpleFocuserService.py" />
-        <option value="$PROJECT_DIR$/pyalpaca/Drivers/ComPortDistributor.py" />
         <option value="$PROJECT_DIR$/pyalpaca/services/device_service.py" />
         <option value="$PROJECT_DIR$/pyalpaca/Drivers/ASCOMDriver/SimpleEQMountDriver.py" />
-        <option value="$PROJECT_DIR$/pyalpaca/Drivers/ASCOMDriver/MegaMountDriver.py" />
         <option value="$PROJECT_DIR$/pyalpaca/server.py" />
-        <option value="$PROJECT_DIR$/pyalpaca/Drivers/ASCOMDriver/MegaFocuserDriver.py" />
         <option value="$PROJECT_DIR$/pyalpaca/config.json" />
+        <option value="$PROJECT_DIR$/pyalpaca/Drivers/ComPortDistributor.py" />
+        <option value="$PROJECT_DIR$/pyalpaca/Drivers/ASCOMDriver/MegaFocuserDriver.py" />
+        <option value="$PROJECT_DIR$/pyalpaca/Drivers/ASCOMDriver/MegaMountDriver.py" />
+        <option value="$PROJECT_DIR$/sharpcap_scripts/get_current_coordinates.py" />
       </list>
     </option>
   </component>
@@ -191,6 +191,7 @@
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
+      <pane id="Scope" />
       <pane id="ProjectPane">
         <subPane>
           <expand>
@@ -198,35 +199,10 @@
               <item name="_STEROWANIE" type="b2602c69:ProjectViewProjectNode" />
               <item name="_STEROWANIE" type="462c0819:PsiDirectoryNode" />
             </path>
-            <path>
-              <item name="_STEROWANIE" type="b2602c69:ProjectViewProjectNode" />
-              <item name="_STEROWANIE" type="462c0819:PsiDirectoryNode" />
-              <item name="pyalpaca" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="_STEROWANIE" type="b2602c69:ProjectViewProjectNode" />
-              <item name="_STEROWANIE" type="462c0819:PsiDirectoryNode" />
-              <item name="pyalpaca" type="462c0819:PsiDirectoryNode" />
-              <item name="Drivers" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="_STEROWANIE" type="b2602c69:ProjectViewProjectNode" />
-              <item name="_STEROWANIE" type="462c0819:PsiDirectoryNode" />
-              <item name="pyalpaca" type="462c0819:PsiDirectoryNode" />
-              <item name="Drivers" type="462c0819:PsiDirectoryNode" />
-              <item name="ASCOMDriver" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="_STEROWANIE" type="b2602c69:ProjectViewProjectNode" />
-              <item name="_STEROWANIE" type="462c0819:PsiDirectoryNode" />
-              <item name="pyalpaca" type="462c0819:PsiDirectoryNode" />
-              <item name="services" type="462c0819:PsiDirectoryNode" />
-            </path>
           </expand>
           <select />
         </subPane>
       </pane>
-      <pane id="Scope" />
     </panes>
   </component>
   <component name="PropertiesComponent">
@@ -313,6 +289,7 @@
   </component>
   <component name="ToolWindowManager">
     <frame x="-8" y="-8" width="1382" height="784" extended-state="6" />
+    <editor active="true" />
     <layout>
       <window_info active="true" content_ui="combo" id="Project" order="0" sideWeight="0.49602544" visible="true" weight="0.25" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
@@ -411,10 +388,10 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/pyalpaca/Drivers/ComPortDistributor.py">
+    <entry file="file://$PROJECT_DIR$/pyalpaca/Drivers/ASCOMDriver/DeviceInterfaces/IAscomDriver.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="255">
-          <caret line="15" column="17" selection-start-line="15" selection-start-column="17" selection-end-line="15" selection-end-column="17" />
+        <state relative-caret-position="119">
+          <caret line="7" column="8" selection-start-line="7" selection-start-column="8" selection-end-line="7" selection-end-column="8" />
         </state>
       </provider>
     </entry>
@@ -425,47 +402,19 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/pyalpaca/Drivers/ASCOMDriver/DeviceInterfaces/IAscomDriver.py">
+    <entry file="file://$PROJECT_DIR$/pyalpaca/services/device_service.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="119">
-          <caret line="7" column="8" selection-start-line="7" selection-start-column="8" selection-end-line="7" selection-end-column="8" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/pyalpaca/Drivers/ASCOMDriver/SimpleEQMountDriver.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="193">
-          <caret line="293" column="8" selection-start-line="293" selection-start-column="8" selection-end-line="293" selection-end-column="8" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/pyalpaca/Drivers/ASCOMDriver/MyDeviceDriver.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="272">
-          <caret line="53" column="38" lean-forward="true" selection-start-line="53" selection-start-column="8" selection-end-line="53" selection-end-column="38" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/pyalpaca/Drivers/ASCOMDriver/SimpleFocuserDriver.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="51">
-          <caret line="3" column="32" lean-forward="true" selection-start-line="3" selection-start-column="32" selection-end-line="3" selection-end-column="32" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/pyalpaca/services/SimpleFocuserService.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="85">
-          <caret line="5" column="32" lean-forward="true" selection-start-line="5" selection-start-column="32" selection-end-line="5" selection-end-column="32" />
+        <state relative-caret-position="1088">
+          <caret line="76" column="44" selection-start-line="76" selection-start-column="44" selection-end-line="76" selection-end-column="44" />
           <folding>
-            <element signature="e#0#32#0" expanded="true" />
+            <element signature="e#634#655#0" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/pyalpaca/services/SimpleTelescopeService.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="547">
+        <state relative-caret-position="4352">
           <caret line="259" selection-start-line="259" selection-end-line="259" />
           <folding>
             <element signature="e#0#32#0" expanded="true" />
@@ -473,30 +422,17 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/pyalpaca/services/device_service.py">
+    <entry file="file://$PROJECT_DIR$/pyalpaca/Drivers/ASCOMDriver/SimpleEQMountDriver.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="261">
-          <caret line="83" column="19" selection-start-line="83" selection-start-column="12" selection-end-line="83" selection-end-column="19" />
-          <folding>
-            <element signature="e#634#655#0" expanded="true" />
-          </folding>
+        <state relative-caret-position="4981">
+          <caret line="293" column="8" selection-start-line="293" selection-start-column="8" selection-end-line="293" selection-end-column="8" />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/pyalpaca/Drivers/ASCOMDriver/MegaMountDriver.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="700">
-          <caret line="68" column="48" selection-start-line="68" selection-start-column="48" selection-end-line="68" selection-end-column="48" />
-          <folding>
-            <element signature="e#0#52#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/pyalpaca/Drivers/ASCOMDriver/MegaFocuserDriver.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="289">
-          <caret line="63" column="52" selection-start-line="63" selection-start-column="52" selection-end-line="63" selection-end-column="52" />
+        <state relative-caret-position="102">
+          <caret line="9" selection-start-line="9" selection-end-line="9" />
           <folding>
             <element signature="e#0#52#0" expanded="true" />
           </folding>
@@ -505,8 +441,59 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/pyalpaca/config.json">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="119">
-          <caret line="7" column="25" selection-start-line="7" selection-start-column="25" selection-end-line="7" selection-end-column="25" />
+        <state relative-caret-position="357">
+          <caret line="21" column="3" selection-start-line="21" selection-start-column="3" selection-end-line="21" selection-end-column="3" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/pyalpaca/Drivers/ASCOMDriver/SimpleFocuserDriver.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="51">
+          <caret line="3" column="6" selection-start-line="3" selection-start-column="6" selection-end-line="3" selection-end-column="6" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/pyalpaca/services/SimpleFocuserService.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="51">
+          <caret line="5" column="32" selection-start-line="5" selection-start-column="32" selection-end-line="5" selection-end-column="32" />
+          <folding>
+            <element signature="e#0#32#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/pyalpaca/Drivers/ASCOMDriver/MyDeviceDriver.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="51">
+          <caret line="5" column="6" selection-start-line="5" selection-start-column="6" selection-end-line="5" selection-end-column="6" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/pyalpaca/Drivers/ComPortDistributor.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="272">
+          <caret line="16" column="42" selection-start-line="16" selection-start-column="42" selection-end-line="16" selection-end-column="42" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/pyalpaca/Drivers/ASCOMDriver/MegaFocuserDriver.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="102">
+          <caret line="22" selection-start-line="22" selection-end-line="23" />
+          <folding>
+            <element signature="e#0#52#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/sharpcap_scripts/get_current_coordinates.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="85">
+          <caret line="22" column="32" selection-start-line="22" selection-start-column="32" selection-end-line="22" selection-end-column="32" />
+          <folding>
+            <element signature="e#0#17#0" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>

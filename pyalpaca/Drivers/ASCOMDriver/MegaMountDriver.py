@@ -8,6 +8,7 @@ MOVE_THRESHOLD = 0.0001
 RA_AXIS_NUMBER = 1
 DEC_AXIS_NUMBER = 0
 
+
 class MegaMountDriver(SimpleEQMountDriver):
     def __init__(self, config):
         super().__init__(config)

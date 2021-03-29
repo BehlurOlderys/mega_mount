@@ -30,32 +30,44 @@ class MegaFocuserDriver(SimpleFocuserDriver):
         self.__config = config
         self.__is_slewing = False
         self.__arduino = ComPortDistributor.get_port(self.__config["com_port"])
-        time.sleep(1)
-        message = self.__arduino.readline().decode('UTF-8').rstrip()
-        print("Welcome message = " + message)
+        if self.__arduino is not None:
+            time.sleep(1)
+            message = self.__arduino.readline().decode('UTF-8').rstrip()
+            print("Welcome message = " + message)
 
     def __del__(self):
         ComPortDistributor.drop_port(self.__config["com_port"])
         print("Finalizing focuser!")
 
     def halt(self):
+        if self.__arduino is None:
+            return
         print("Sending command halt...")
         command = "HALT\n"
         self.__arduino.write(command.encode())
 
     def move(self, position):
+        if self.__arduino is None:
+            return
         print("Sending command move...")
         command = "FO_MOVE_REL "+str(position) + "\n"
         self.__arduino.write(command.encode())
 
     @property
     def connected(self):
+        if self.__arduino is None:
+            return False
         return MyDeviceDriver.connected.fget(self)
 
     @connected.setter
     def connected(self, value):
         if value == self.is_connected:
             return
+
+        if self.__arduino is None:
+            self.__arduino = ComPortDistributor.get_port(self.__config["com_port"])
+            return
+
         if value:
             print("Sending command to go back to normal mode...")
             self.__arduino.write(b"FO_LOW_CUR_OFF\n")
@@ -68,6 +80,8 @@ class MegaFocuserDriver(SimpleFocuserDriver):
 
     @property
     def ismoving(self):
+        if self.__arduino is None:
+            return False
         time_now = time.time()
         interval = time_now - self.__last_poll
         print(f"Last poll of focuser status: {self.__last_poll}, interval passed = {interval}")

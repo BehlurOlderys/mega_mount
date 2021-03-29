@@ -7,8 +7,12 @@ class ComPortDistributor:
     @staticmethod
     def get_port(port_name):
         if not port_name in com_ports:
-            com_ports[port_name] = {"ref": serial.Serial(port_name, 115200, timeout=.5),
-                                    "instances": 0}
+            try:
+                com_ports[port_name] = {"ref": serial.Serial(port_name, 115200, timeout=.5),
+                                        "instances": 0}
+            except serial.SerialException as se:
+                print(f"Got an exception {se} when trying to connect to serial {port_name}!")
+                return None
         com_ports[port_name]["instances"] += 1
         return com_ports[port_name]["ref"]
 
