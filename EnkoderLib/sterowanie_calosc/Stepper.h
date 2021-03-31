@@ -10,6 +10,14 @@ bool const DESIRED_POSITION_REACHED = true;
 bool const DESIRED_POSITION_NOT_REACHED = false;
 uint8_t const STEPPER_NAME_SIZE = 4u;
 static int8_t const STEPPER_TYPE_ID = 2u;
+bool const FORWARD_DIRECTION = true;
+bool const BACKWARD_DIRECTION = false;
+
+enum Direction
+{
+  FORWARD,
+  BACKWARD
+};
 
 
 struct StepperDebugData{
@@ -30,6 +38,7 @@ struct Stepper{
   bool is_enabled() const;
   bool is_slewing() const;
   bool is_moving() const;
+  bool is_forward() const;
   void setup_pins();
   void set_delay_us(uint32_t const delay_us);
   void set_position_absolute(int32_t const new_position);  

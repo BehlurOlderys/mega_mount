@@ -49,6 +49,7 @@ void handle_unknown_command(){
 }
 
 void StartTrackingRA(){
+  stepper_ra.change_dir(FORWARD_DIRECTION);
   ra_expected_interval_us = ra_calculated_delay_us;
   ra_state = TRACKING;
   ra_last_step_us = micros();
@@ -155,6 +156,10 @@ void BoundStepperRaStepSidereal(){
   if (ra_state != TRACKING){
     return;
   }
+  bool const is_forward = stepper_ra.is_forward();
+  if (!stepper_ra.is_forward()){
+    stepper_ra.change_dir(FORWARD_DIRECTION);
+  }
   uint32_t const current_us = micros();
   uint32_t const current_interval_us = current_us - ra_last_step_us;
   if(current_interval_us >= ra_expected_interval_us){
@@ -162,6 +167,7 @@ void BoundStepperRaStepSidereal(){
     ra_last_step_us = current_us;
     ra_expected_interval_us = ra_calculated_delay_us + ra_expected_interval_us - current_interval_us;
   }
+  stepper_ra.change_dir(is_forward);
 }
 
 void BoundStepperRaSlew(){

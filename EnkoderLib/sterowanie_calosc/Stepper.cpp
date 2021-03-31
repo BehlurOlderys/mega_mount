@@ -47,6 +47,10 @@ bool Stepper::is_moving() const{
   return _is_moving;
 }
 
+bool Stepper::is_forward() const{
+  return _dir_forward;
+}
+
 void Stepper::setup_pins(){
   pinMode(_step_pin, OUTPUT);
   pinMode(_dir_pin, OUTPUT);
