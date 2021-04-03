@@ -23,6 +23,12 @@ enum RaStateType{
   NOT_TRACKING
 };
 
+enum RaEnkoderStateType{
+  FEEDBACK_OFF,
+  FEEDBACK_ON,
+  FEEDBACK_PAUSED
+};
+
 
 static uint32_t const ra_calculated_delay_us = 19986;
 uint32_t ra_expected_interval_us = ra_calculated_delay_us;
@@ -64,14 +70,26 @@ void handle_unknown_command(){
   Serial.println("!");  
 }
 
-bool encoder_ra_enabled = false;
+RaEnkoderStateType encoder_ra_state = FEEDBACK_ON;
+int32_t ra_encoder_expected_position = 0;
+uint32_t last_ra_feedback_time_us = 0;
+uint32_t expected_ra_feedback_interval_us = RA_Encoder_Step_Period_us;
+
 
 void StartEncoderRAFeedback(){
-  encoder_ra_enabled = true;
+  enkoder_ra.reset_encoder();
+  ra_encoder_expected_position = 0;
+  encoder_ra_state = FEEDBACK_ON;
+  last_ra_feedback_time_us = micros();
+  expected_ra_feedback_interval_us = RA_Encoder_Step_Period_us;
+}
+
+void PauseEncoderRAFeedback(){
+  encoder_ra_state = FEEDBACK_PAUSED;
 }
 
 void StopEncoderRAFeedback(){
-  encoder_ra_enabled = false;
+  encoder_ra_state = FEEDBACK_OFF;
 }
 
 void StartTrackingRA(){
@@ -79,10 +97,30 @@ void StartTrackingRA(){
   ra_expected_interval_us = ra_calculated_delay_us;
   ra_state = TRACKING;
   ra_last_step_us = micros();
+
+  StartEncoderRAFeedback();
 }
 
 void StopTrackingRA(){
   ra_state = NOT_TRACKING;
+
+  StopEncoderRAFeedback();
+}
+
+void StartRaStepperMove(int const command_argument){
+  if (encoder_ra_state == FEEDBACK_ON){
+    PauseEncoderRAFeedback();
+  }
+  bool const move_forward = (command_argument > 0);
+  stepper_ra.change_dir(move_forward);
+  stepper_ra.start_moving();
+}
+
+void StopRaStepperMove(){
+  if (encoder_ra_state == FEEDBACK_PAUSED){
+    StartEncoderRAFeedback();
+  }
+  stepper_ra.stop_moving();
 }
 
 void handle_serial(){
@@ -98,12 +136,9 @@ void handle_serial(){
   }else if (0 == strcmp(command_name, "RA_POSITION")){
     stepper_ra.print_to(Serial);
   }else if (0 == strcmp(command_name, "RA_MOVE")){
-    bool const move_forward = (command_argument > 0);
-    stepper_ra.change_dir(move_forward);
-    stepper_ra.start_moving();
+    StartRaStepperMove(command_argument);
   }else if (0 == strcmp(command_name, "RA_STOP")){
-    stepper_ra.stop_moving();
-    
+    StopRaStepperMove();    
   }else if (0 == strcmp(command_name, "RA_ENCO_ON")){
     StartEncoderRAFeedback();    
   }else if (0 == strcmp(command_name, "RA_ENCO_OFF")){
@@ -183,6 +218,81 @@ void BoundStepperDecPrintRunnable(){
   step_de_print_counter++;
 }
 
+uint32_t SafelySubtractWrappedU32(uint32_t const A, uint32_t const B){
+  if (B > A){
+    uint32_t const complement = UINT32_MAX - B;
+    return A + complement;
+  }
+  return A - B;
+}
+
+struct StepperDirectionSentinel{
+  StepperDirectionSentinel(Stepper& guarded) : _guarded(guarded), _dir(guarded.is_forward()) {}
+  ~StepperDirectionSentinel(){
+    _guarded.change_dir(_dir);
+  }
+  Stepper& _guarded;
+  bool const _dir;
+};
+
+void PerformRACorrections(){
+  int32_t const current_position = enkoder_ra.get_current_position();
+  int32_t const position_delta = ra_encoder_expected_position - current_position;
+  bool const should_stepper_be_moved = abs(position_delta) > 0;
+  if (!should_stepper_be_moved){
+    return;
+  }
+  bool const is_stepper_behind_encoder = (position_delta < 0);
+  bool const should_stepper_go_forward = is_stepper_behind_encoder;
+
+  static uint32_t counter=0;
+  counter++;
+  if (counter > 100){
+    // FO_LOW_CUR_ON
+    // RA_ENCO_ON
+    // RA_TRACK_ON
+    
+    Serial.print("Expected position = ");
+    Serial.print(ra_encoder_expected_position);
+    Serial.print(", Current position = ");
+    Serial.println(current_position);
+    counter = 0;
+  }
+ 
+  StepperDirectionSentinel dir_sentinel(stepper_ra);
+  stepper_ra.change_dir(should_stepper_go_forward);
+  stepper_ra.step_motor();
+}
+
+void BoundRaFeedback(){
+  if (!encoder_ra_state == FEEDBACK_ON){
+    return;
+  }
+  if (ra_state != TRACKING){
+    return;
+  }
+  uint32_t const current_us = micros();
+  uint32_t current_interval_us = SafelySubtractWrappedU32(current_us, last_ra_feedback_time_us);
+
+//  static uint32_t counter = 0;
+//  if (counter == 100){
+//    Serial.print("current_interval_us = ");
+//    Serial.print(current_interval_us);
+//    Serial.print(", expected interval us = ");
+//    Serial.println(expected_ra_feedback_interval_us);
+//    
+//    counter = 0;
+//  }
+//  counter++;
+  
+  if(current_interval_us >= expected_ra_feedback_interval_us){
+    ra_encoder_expected_position++;
+    last_ra_feedback_time_us = current_us;
+    expected_ra_feedback_interval_us = RA_Encoder_Step_Period_us + expected_ra_feedback_interval_us - current_interval_us;
+  }
+  PerformRACorrections();
+}
+
 void BoundStepperRaStepSidereal(){
   if (ra_state != TRACKING){
     return;
@@ -237,17 +347,18 @@ void BoundStepperDecSlew(){
 }
 
 void handle_runnables(){
+  BoundStepperRaStepSidereal();
   BoundStepperFocuserSlew();
   BoundStepperRaSlew();
   BoundStepperDecSlew();
 //  BoundStepperRaPrintRunnable();
 //  BoundStepperDecPrintRunnable();
 //  
-  BoundEncoderRaPrintRunnable();
   BoundEncoderRaUpdateRunnable();
-  BoundStepperRaStepSidereal();
+  BoundRaFeedback();
   BoundStepperRaMove();
   BoundStepperDecMove();
+  BoundEncoderRaPrintRunnable();
 }
 
 void handle_events(){

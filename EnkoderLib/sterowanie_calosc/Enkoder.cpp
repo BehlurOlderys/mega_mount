@@ -31,6 +31,7 @@ const char* Enkoder::get_name() const {
 void Enkoder::reset_encoder(){
   _current_position = 0;
   _last_timestamp = 0;
+  _previous_index = 0;
 }
 
 void Enkoder::setup_encoder(){
@@ -42,7 +43,7 @@ void Enkoder::setup_encoder(){
 void Enkoder::runnable_update_position(){
   uint8_t const channelA = uint16_t(analogRead(_channel_a_pin) > 512);
   uint8_t const channelB = uint16_t(analogRead(_channel_b_pin) > 512);
-  uint8_t const current_index = 2*channelA + channelB;
+  uint8_t const current_index = 2*channelB + channelA;
   int8_t const position_progress = table_of_states[_previous_index][current_index];
   _previous_index = current_index;
   _current_position += position_progress;
