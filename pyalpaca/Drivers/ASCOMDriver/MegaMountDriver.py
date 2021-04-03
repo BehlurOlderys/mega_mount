@@ -1,12 +1,38 @@
 from .SimpleEQMountDriver import SimpleEQMountDriver
 from Drivers.ComPortDistributor import ComPortDistributor
 import time
+import threading
 from struct import unpack
 
 
 MOVE_THRESHOLD = 0.0001
 RA_AXIS_NUMBER = 1
 DEC_AXIS_NUMBER = 0
+global_thread_killer = False
+global_keep_logging = True
+
+
+def encoder_logging(ser):
+    print("Starting encoder logging!")
+    log_file = open("encoder_log.txt", "w")
+    while not global_thread_killer:
+        if not global_keep_logging:
+            continue
+        try:
+            message = ser.readline().decode('UTF-8').rstrip()
+            if "BHS" == message:
+                type_id = int(ser.readline())
+                data_size = int(ser.readline())
+                raw_payload = ser.read(data_size)
+                (position, timestamp, raw_name) = unpack("iI4s", raw_payload)
+                name = raw_name.decode('UTF-8').strip()
+                log_file.write(f"{raw_name},{timestamp},{position},\n")
+
+        except Exception as e:
+            print("Exception: " + str(e))
+            continue
+
+    log_file.close()
 
 
 class MegaMountDriver(SimpleEQMountDriver):
@@ -18,11 +44,23 @@ class MegaMountDriver(SimpleEQMountDriver):
         self.__tracking = False
         self.__arduino = ComPortDistributor.get_port(self.__config["com_port"])
         time.sleep(1)
+        self.encoder_log_thread = threading.Thread(target=encoder_logging, args=(self.__arduino,))
+        self.encoder_log_thread.start()
         print("Mega mount initialized")
 
     def __del__(self):
+        global global_thread_killer
+        global_thread_killer = True
         ComPortDistributor.drop_port(self.__config["com_port"])
+        self.encoder_log_thread.join()
         print("Finalizing mega mount!")
+
+    def __read_line_from_arduino(self):
+        global global_keep_logging
+        global_keep_logging = False
+        message = self.__arduino.readline()
+        global_keep_logging = True
+        return message
 
     def axis_rates(self, axis):
         rates = [
@@ -52,7 +90,7 @@ class MegaMountDriver(SimpleEQMountDriver):
         command = "IS_TRACKING\n"
         self.__arduino.write(command.encode())
         print("Acquiring response...")
-        message = self.__arduino.readline()
+        message = self.__read_line_from_arduino()
         print(f"Response = {message}")
         self.__tracking = value
 

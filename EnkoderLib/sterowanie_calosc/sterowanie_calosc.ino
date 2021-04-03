@@ -3,6 +3,21 @@
 #include "Arduino.h"
 #include "Config.h"
 
+// defines for setting and clearing register bits
+#ifndef cbi
+#define cbi(sfr, bit) (_SFR_BYTE(sfr) &= ~_BV(bit))
+#endif
+#ifndef sbi
+#define sbi(sfr, bit) (_SFR_BYTE(sfr) |= _BV(bit))
+#endif
+
+void set_fast_adc(){ 
+  // set prescale to 16
+  sbi(ADCSRA,ADPS2) ;
+  cbi(ADCSRA,ADPS1) ;
+  cbi(ADCSRA,ADPS0) ;
+}
+
 enum RaStateType{
   TRACKING,
   NOT_TRACKING
@@ -28,8 +43,8 @@ const uint8_t Z_STEP_PIN = 46;
 const uint8_t Z_DIR_PIN = 48;
 const uint8_t Z_ENABLE_PIN = 62;
 
-const uint8_t AUX_A_PIN = A1;// TODO! for mega!
-const uint8_t AUX_B_PIN = A2; // TODO!
+const uint8_t AUX_A_PIN = A4;
+const uint8_t AUX_B_PIN = A3;
 
 const uint8_t COMMAND_MAX_LENGTH = 20;
 const uint8_t COMMAND_NAME_LENGTH = 10;
@@ -38,6 +53,7 @@ char command_name[COMMAND_NAME_LENGTH];
 char command_trash[COMMAND_MAX_LENGTH];
 
 Enkoder enkoder_ra(AUX_A_PIN, AUX_B_PIN, "ENRA");
+uint32_t RA_Encoder_Step_Period_us = 414250;
 Stepper stepper_ra(Y_STEP_PIN, Y_DIR_PIN, Y_ENABLE_PIN, "STRA");
 Stepper stepper_focuser(X_STEP_PIN, X_DIR_PIN, X_ENABLE_PIN, "FOCU");
 Stepper stepper_de(Z_STEP_PIN, Z_DIR_PIN, Z_ENABLE_PIN, "STDE");
@@ -46,6 +62,16 @@ void handle_unknown_command(){
   Serial.print("UNKNOWN COMMAND: ");
   Serial.print(command_string);
   Serial.println("!");  
+}
+
+bool encoder_ra_enabled = false;
+
+void StartEncoderRAFeedback(){
+  encoder_ra_enabled = true;
+}
+
+void StopEncoderRAFeedback(){
+  encoder_ra_enabled = false;
 }
 
 void StartTrackingRA(){
@@ -77,6 +103,11 @@ void handle_serial(){
     stepper_ra.start_moving();
   }else if (0 == strcmp(command_name, "RA_STOP")){
     stepper_ra.stop_moving();
+    
+  }else if (0 == strcmp(command_name, "RA_ENCO_ON")){
+    StartEncoderRAFeedback();    
+  }else if (0 == strcmp(command_name, "RA_ENCO_OFF")){
+    StopEncoderRAFeedback();    
   }else if (0 == strcmp(command_name, "RA_SLEW_ABS")){
     // todo
   }else if (0 == strcmp(command_name, "RA_SLEW_REL")){
@@ -212,8 +243,8 @@ void handle_runnables(){
 //  BoundStepperRaPrintRunnable();
 //  BoundStepperDecPrintRunnable();
 //  
-//  BoundEncoderRaPrintRunnable();
-//  BoundEncoderRaUpdateRunnable();
+  BoundEncoderRaPrintRunnable();
+  BoundEncoderRaUpdateRunnable();
   BoundStepperRaStepSidereal();
   BoundStepperRaMove();
   BoundStepperDecMove();
@@ -225,7 +256,7 @@ void handle_events(){
 
 void setup() {
   Serial.begin(115200);
-//  enkoder_ra.setup_encoder();
+  enkoder_ra.setup_encoder();
   stepper_ra.setup_pins();
   stepper_de.setup_pins();
   stepper_focuser.setup_pins();
@@ -233,6 +264,7 @@ void setup() {
   ra_state = NOT_TRACKING;
   stepper_ra.set_delay_us(100);
   stepper_de.set_delay_us(1000);
+  set_fast_adc();
 }
 
 void loop() {

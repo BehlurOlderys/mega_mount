@@ -3,6 +3,7 @@ import sys
 from struct import unpack
 
 ENCODER_TYPE_ID = 1
+STEPPER_TYPE_ID = 2
 
 
 def deserialize_encoder(raw_payload, logger):
@@ -17,7 +18,7 @@ def deserialize_encoder(raw_payload, logger):
 def deserialize_stepper(raw_payload, logger):
     (delay, direction, position, desired, is_enabled, is_slewing, raw_name) = unpack("i?II??4s", raw_payload)
     name = raw_name.decode('UTF-8').strip()
-    logger.write(f"{timestamp},{position},{raw_name},\n")
+    return name
 
 map_of_deserializers = {
   ENCODER_TYPE_ID: deserialize_encoder,
@@ -34,7 +35,7 @@ class SerialReader:
     def __init__(self):
         self.log_file = open("log_file_fast.txt", "w", buffering=1)
         self.ser = serial.Serial(
-            port='COM3',
+            port='COM6',
             baudrate=115200
         )
 
