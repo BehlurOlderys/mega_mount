@@ -235,14 +235,16 @@ struct StepperDirectionSentinel{
   bool const _dir;
 };
 
+const int32_t RA_Encoder_Direction = -1;
+
 void PerformRACorrections(){
-  int32_t const current_position = enkoder_ra.get_current_position();
+  int32_t const current_position = enkoder_ra.get_current_position()*RA_Encoder_Direction;
   int32_t const position_delta = ra_encoder_expected_position - current_position;
   bool const should_stepper_be_moved = abs(position_delta) > 0;
   if (!should_stepper_be_moved){
     return;
   }
-  bool const is_stepper_behind_encoder = (position_delta < 0);
+  bool const is_stepper_behind_encoder = (position_delta > 0);
   bool const should_stepper_go_forward = is_stepper_behind_encoder;
 
   static uint32_t counter=0;
@@ -259,9 +261,9 @@ void PerformRACorrections(){
     counter = 0;
   }
  
-  StepperDirectionSentinel dir_sentinel(stepper_ra);
-  stepper_ra.change_dir(should_stepper_go_forward);
-  stepper_ra.step_motor();
+//  StepperDirectionSentinel dir_sentinel(stepper_ra);
+//  stepper_ra.change_dir(should_stepper_go_forward);
+//  stepper_ra.step_motor();
 }
 
 void BoundRaFeedback(){

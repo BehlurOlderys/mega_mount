@@ -7,6 +7,7 @@ from services.SimpleTelescopeService import SimpleTelescopeService
 from services.SimpleFocuserService import SimpleFocuserService
 from services.SimpleFilterWheelService import SimpleFilterWheelService
 from services.config import ascomConfig, initConfig
+import logging
 
 Services = []
 
@@ -77,7 +78,22 @@ def get_rest_handlers():
     return handlers
 
 
+def init_logging():
+    logFormatter = logging.Formatter("%(asctime)s [%(filename)s] [%(lineno)d] [%(funcName)s] [%(levelname)-.4s]  %(message)s")
+    rootLogger = logging.getLogger()
+
+    fileHandler = logging.FileHandler("main_server.log")
+    fileHandler.setFormatter(logFormatter)
+    rootLogger.addHandler(fileHandler)
+
+    consoleHandler = logging.StreamHandler()
+    consoleHandler.setFormatter(logFormatter)
+    rootLogger.addHandler(consoleHandler)
+    rootLogger.setLevel(logging.DEBUG)
+
+
 if __name__ == '__main__':
+    init_logging()
     try:
         initConfig()
         handlers = get_rest_handlers()

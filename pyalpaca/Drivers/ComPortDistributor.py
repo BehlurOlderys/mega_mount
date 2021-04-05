@@ -1,4 +1,6 @@
 import serial
+import logging
+log = logging.getLogger(__name__)
 
 com_ports = {}
 
@@ -11,7 +13,7 @@ class ComPortDistributor:
                 com_ports[port_name] = {"ref": serial.Serial(port_name, 115200, timeout=.5),
                                         "instances": 0}
             except serial.SerialException as se:
-                print(f"Got an exception {se} when trying to connect to serial {port_name}!")
+                log.error(f"Got an exception {se} when trying to connect to serial {port_name}!")
                 return None
         com_ports[port_name]["instances"] += 1
         return com_ports[port_name]["ref"]
