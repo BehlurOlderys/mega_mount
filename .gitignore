@@ -1,3 +1,8 @@
+*.ods
+*.log
+*.txt
+*.fits
+*.png
 *.pyc
 .idea/workspace.xml
 
