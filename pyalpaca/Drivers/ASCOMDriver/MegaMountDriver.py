@@ -11,7 +11,7 @@ MOVE_THRESHOLD = 0.0001
 RA_AXIS_NUMBER = 1
 DEC_AXIS_NUMBER = 0
 global_thread_killer = False
-global_keep_logging = True
+global_keep_logging = False
 
 ENCODER_TYPE_ID = 1
 
@@ -30,10 +30,14 @@ def encoder_logging(ser):
         try:
             message = ser.readline().decode('UTF-8').rstrip()
             if "BHS" == message:
+                log.debug(f"Got BHS!")
                 type_id = int(ser.readline())
                 if type_id != ENCODER_TYPE_ID:
                     continue
-                data_size = int(ser.readline())
+
+                next_m = ser.readline()
+                log.debug(f"Next = {next_m}")
+                data_size = int(next_m.decode('UTF-8').rstrip())
                 raw_payload = ser.read(data_size)
                 (position, timestamp, raw_name) = unpack("iI4s", raw_payload)
                 name = raw_name.decode('UTF-8').strip()

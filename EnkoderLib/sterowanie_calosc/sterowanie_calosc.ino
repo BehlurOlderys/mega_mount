@@ -1,7 +1,6 @@
 #include "Stepper.h"
 #include "Enkoder.h"
 #include "Arduino.h"
-#include "Config.h"
 
 // defines for setting and clearing register bits
 #ifndef cbi
@@ -254,16 +253,16 @@ void PerformRACorrections(){
     // RA_ENCO_ON
     // RA_TRACK_ON
     
-    Serial.print("Expected position = ");
-    Serial.print(ra_encoder_expected_position);
-    Serial.print(", Current position = ");
-    Serial.println(current_position);
-    counter = 0;
+//    Serial.print("Expected position = ");
+//    Serial.print(ra_encoder_expected_position);
+//    Serial.print(", Current position = ");
+//    Serial.println(current_position);
+//    counter = 0;
   }
  
-//  StepperDirectionSentinel dir_sentinel(stepper_ra);
-//  stepper_ra.change_dir(should_stepper_go_forward);
-//  stepper_ra.step_motor();
+  StepperDirectionSentinel dir_sentinel(stepper_ra);
+  stepper_ra.change_dir(should_stepper_go_forward);
+  stepper_ra.step_motor();
 }
 
 void BoundRaFeedback(){
@@ -360,7 +359,7 @@ void handle_runnables(){
   BoundRaFeedback();
   BoundStepperRaMove();
   BoundStepperDecMove();
-  BoundEncoderRaPrintRunnable();
+//  BoundEncoderRaPrintRunnable();
 }
 
 void handle_events(){
