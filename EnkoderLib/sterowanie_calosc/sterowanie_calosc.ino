@@ -1,6 +1,7 @@
 #include "Stepper.h"
-#include "Enkoder.h"
+#include "AbsoluteEncoder.h"
 #include "Arduino.h"
+#include "mega_pins.h"
 
 // defines for setting and clearing register bits
 #ifndef cbi
@@ -22,34 +23,22 @@ enum RaStateType{
   NOT_TRACKING
 };
 
-enum RaEnkoderStateType{
-  FEEDBACK_OFF,
-  FEEDBACK_ON,
-  FEEDBACK_PAUSED
-};
+//enum RaEnkoderStateType{
+//  FEEDBACK_OFF,
+//  FEEDBACK_ON,
+//  FEEDBACK_PAUSED
+//};
 
 
 static uint32_t const ra_calculated_delay_us = 19986;
-uint32_t ra_expected_interval_us = ra_calculated_delay_us;
 
+uint32_t GetTrackingDelayUs(){
+  return ra_calculated_delay_us;
+}
+uint32_t ra_expected_interval_us = GetTrackingDelayUs();
 uint32_t ra_last_step_us = 0;
-
 RaStateType ra_state;
 
-const uint8_t X_STEP_PIN = 54;  // A9
-const uint8_t X_ENABLE_PIN = 38;
-const uint8_t X_DIR_PIN = 55;
-
-const uint8_t Y_STEP_PIN = 60;
-const uint8_t Y_DIR_PIN = 61;
-const uint8_t Y_ENABLE_PIN = 56;
-
-const uint8_t Z_STEP_PIN = 46;
-const uint8_t Z_DIR_PIN = 48;
-const uint8_t Z_ENABLE_PIN = 62;
-
-const uint8_t AUX_A_PIN = A4;
-const uint8_t AUX_B_PIN = A3;
 
 const uint8_t COMMAND_MAX_LENGTH = 20;
 const uint8_t COMMAND_NAME_LENGTH = 10;
@@ -57,68 +46,65 @@ char command_string[COMMAND_MAX_LENGTH];
 char command_name[COMMAND_NAME_LENGTH];
 char command_trash[COMMAND_MAX_LENGTH];
 
-Enkoder enkoder_ra(AUX_A_PIN, AUX_B_PIN, "ENRA");
-uint32_t RA_Encoder_Step_Period_us = 414250;
 Stepper stepper_ra(Y_STEP_PIN, Y_DIR_PIN, Y_ENABLE_PIN, "STRA");
 Stepper stepper_focuser(X_STEP_PIN, X_DIR_PIN, X_ENABLE_PIN, "FOCU");
 Stepper stepper_de(Z_STEP_PIN, Z_DIR_PIN, Z_ENABLE_PIN, "STDE");
 
 void handle_unknown_command(){
+  Serial.println("BHS");
   Serial.print("UNKNOWN COMMAND: ");
   Serial.print(command_string);
-  Serial.println("!");  
+  Serial.println("!");
 }
 
-RaEnkoderStateType encoder_ra_state = FEEDBACK_ON;
-int32_t ra_encoder_expected_position = 0;
-uint32_t last_ra_feedback_time_us = 0;
-uint32_t expected_ra_feedback_interval_us = RA_Encoder_Step_Period_us;
+//RaEnkoderStateType encoder_ra_state = FEEDBACK_ON;
+//int32_t ra_encoder_expected_position = 0;
+//uint32_t last_ra_feedback_time_us = 0;
+//uint32_t expected_ra_feedback_interval_us = RA_Encoder_Step_Period_us;
 
+//void StartEncoderRAFeedback(){
+//  enkoder_ra.reset_encoder();
+//  ra_encoder_expected_position = 0;
+//  encoder_ra_state = FEEDBACK_ON;
+//  last_ra_feedback_time_us = micros();
+//  expected_ra_feedback_interval_us = RA_Encoder_Step_Period_us;
+//}
+//
+//void PauseEncoderRAFeedback(){
+//  encoder_ra_state = FEEDBACK_PAUSED;
+//}
+//
+//void StopEncoderRAFeedback(){
+//  encoder_ra_state = FEEDBACK_OFF;
+//}
 
-void StartEncoderRAFeedback(){
-  enkoder_ra.reset_encoder();
-  ra_encoder_expected_position = 0;
-  encoder_ra_state = FEEDBACK_ON;
-  last_ra_feedback_time_us = micros();
-  expected_ra_feedback_interval_us = RA_Encoder_Step_Period_us;
-}
-
-void PauseEncoderRAFeedback(){
-  encoder_ra_state = FEEDBACK_PAUSED;
-}
-
-void StopEncoderRAFeedback(){
-  encoder_ra_state = FEEDBACK_OFF;
-}
 
 void StartTrackingRA(){
   stepper_ra.change_dir(FORWARD_DIRECTION);
-  ra_expected_interval_us = ra_calculated_delay_us;
+  ra_expected_interval_us = GetTrackingDelayUs();
   ra_state = TRACKING;
   ra_last_step_us = micros();
-
-  StartEncoderRAFeedback();
+//  StartEncoderRAFeedback();
 }
 
 void StopTrackingRA(){
   ra_state = NOT_TRACKING;
-
-  StopEncoderRAFeedback();
+//  StopEncoderRAFeedback();
 }
 
 void StartRaStepperMove(int const command_argument){
-  if (encoder_ra_state == FEEDBACK_ON){
-    PauseEncoderRAFeedback();
-  }
+//  if (encoder_ra_state == FEEDBACK_ON){
+//    PauseEncoderRAFeedback();
+//  }
   bool const move_forward = (command_argument > 0);
   stepper_ra.change_dir(move_forward);
   stepper_ra.start_moving();
 }
 
 void StopRaStepperMove(){
-  if (encoder_ra_state == FEEDBACK_PAUSED){
-    StartEncoderRAFeedback();
-  }
+//  if (encoder_ra_state == FEEDBACK_PAUSED){
+//    StartEncoderRAFeedback();
+//  }
   stepper_ra.stop_moving();
 }
 
@@ -139,9 +125,9 @@ void handle_serial(){
   }else if (0 == strcmp(command_name, "RA_STOP")){
     StopRaStepperMove();    
   }else if (0 == strcmp(command_name, "RA_ENCO_ON")){
-    StartEncoderRAFeedback();    
+//    StartEncoderRAFeedback();    
   }else if (0 == strcmp(command_name, "RA_ENCO_OFF")){
-    StopEncoderRAFeedback();    
+//    StopEncoderRAFeedback();    
   }else if (0 == strcmp(command_name, "RA_SLEW_ABS")){
     // todo
   }else if (0 == strcmp(command_name, "RA_SLEW_REL")){
@@ -152,6 +138,7 @@ void handle_serial(){
     StopTrackingRA();
   }else if (0 == strcmp(command_name, "IS_TRACKING")){
     bool const is_tracking = (TRACKING == ra_state);
+    Serial.println("BHS");
     Serial.println(is_tracking);
   } // DECLINATION AXIS:
    else if (0 == strcmp(command_name, "DE_HALT")){
@@ -184,22 +171,22 @@ void handle_serial(){
   }
 }
 
-void BoundEncoderRaUpdateRunnable(){
-  enkoder_ra.runnable_update_position();
-}
+//void BoundEncoderRaUpdateRunnable(){
+//  enkoder_ra.runnable_update_position();
+//}
 
-int encoder_ra_print_counter = 0;
+//int encoder_ra_print_counter = 0;
 int step_ra_print_counter = 0;
 int step_de_print_counter = 0;
 
 
-void BoundEncoderRaPrintRunnable(){
-  if (encoder_ra_print_counter >= 1000){
-    enkoder_ra.print_to(Serial);
-    encoder_ra_print_counter = 0;
-  }
-  encoder_ra_print_counter++;
-}
+//void BoundEncoderRaPrintRunnable(){
+//  if (encoder_ra_print_counter >= 1000){
+//    enkoder_ra.print_to(Serial);
+//    encoder_ra_print_counter = 0;
+//  }
+//  encoder_ra_print_counter++;
+//}
 
 void BoundStepperRaPrintRunnable(){
   if (step_ra_print_counter >= 1000){
@@ -234,46 +221,46 @@ struct StepperDirectionSentinel{
   bool const _dir;
 };
 
-const int32_t RA_Encoder_Direction = -1;
+//const int32_t RA_Encoder_Direction = -1;
 
-void PerformRACorrections(){
-  int32_t const current_position = enkoder_ra.get_current_position()*RA_Encoder_Direction;
-  int32_t const position_delta = ra_encoder_expected_position - current_position;
-  bool const should_stepper_be_moved = abs(position_delta) > 0;
-  if (!should_stepper_be_moved){
-    return;
-  }
-  bool const is_stepper_behind_encoder = (position_delta > 0);
-  bool const should_stepper_go_forward = is_stepper_behind_encoder;
-
-  static uint32_t counter=0;
-  counter++;
-  if (counter > 100){
-    // FO_LOW_CUR_ON
-    // RA_ENCO_ON
-    // RA_TRACK_ON
-    
-//    Serial.print("Expected position = ");
-//    Serial.print(ra_encoder_expected_position);
-//    Serial.print(", Current position = ");
-//    Serial.println(current_position);
-//    counter = 0;
-  }
+//void PerformRACorrections(){
+//  int32_t const current_position = enkoder_ra.get_current_position()*RA_Encoder_Direction;
+//  int32_t const position_delta = ra_encoder_expected_position - current_position;
+//  bool const should_stepper_be_moved = abs(position_delta) > 0;
+//  if (!should_stepper_be_moved){
+//    return;
+//  }
+//  bool const is_stepper_behind_encoder = (position_delta > 0);
+//  bool const should_stepper_go_forward = is_stepper_behind_encoder;
+//
+//  static uint32_t counter=0;
+//  counter++;
+//  if (counter > 100){
+//    // FO_LOW_CUR_ON
+//    // RA_ENCO_ON
+//    // RA_TRACK_ON
+//    
+////    Serial.print("Expected position = ");
+////    Serial.print(ra_encoder_expected_position);
+////    Serial.print(", Current position = ");
+////    Serial.println(current_position);
+////    counter = 0;
+//  }
  
-  StepperDirectionSentinel dir_sentinel(stepper_ra);
-  stepper_ra.change_dir(should_stepper_go_forward);
-  stepper_ra.step_motor();
-}
+//  StepperDirectionSentinel dir_sentinel(stepper_ra);
+//  stepper_ra.change_dir(should_stepper_go_forward);
+//  stepper_ra.step_motor();
+//}
 
-void BoundRaFeedback(){
-  if (!encoder_ra_state == FEEDBACK_ON){
-    return;
-  }
-  if (ra_state != TRACKING){
-    return;
-  }
-  uint32_t const current_us = micros();
-  uint32_t current_interval_us = SafelySubtractWrappedU32(current_us, last_ra_feedback_time_us);
+//void BoundRaFeedback(){
+//  if (!encoder_ra_state == FEEDBACK_ON){
+//    return;
+//  }
+//  if (ra_state != TRACKING){
+//    return;
+//  }
+//  uint32_t const current_us = micros();
+//  uint32_t current_interval_us = SafelySubtractWrappedU32(current_us, last_ra_feedback_time_us);
 
 //  static uint32_t counter = 0;
 //  if (counter == 100){
@@ -286,13 +273,13 @@ void BoundRaFeedback(){
 //  }
 //  counter++;
   
-  if(current_interval_us >= expected_ra_feedback_interval_us){
-    ra_encoder_expected_position++;
-    last_ra_feedback_time_us = current_us;
-    expected_ra_feedback_interval_us = RA_Encoder_Step_Period_us + expected_ra_feedback_interval_us - current_interval_us;
-  }
-  PerformRACorrections();
-}
+//  if(current_interval_us >= expected_ra_feedback_interval_us){
+//    ra_encoder_expected_position++;
+//    last_ra_feedback_time_us = current_us;
+//    expected_ra_feedback_interval_us = RA_Encoder_Step_Period_us + expected_ra_feedback_interval_us - current_interval_us;
+//  }
+//  PerformRACorrections();
+//}
 
 void BoundStepperRaStepSidereal(){
   if (ra_state != TRACKING){
@@ -307,7 +294,7 @@ void BoundStepperRaStepSidereal(){
   if(current_interval_us >= ra_expected_interval_us){
     stepper_ra.step_motor();
     ra_last_step_us = current_us;
-    ra_expected_interval_us = ra_calculated_delay_us + ra_expected_interval_us - current_interval_us;
+    ra_expected_interval_us = GetTrackingDelayUs() + ra_expected_interval_us - current_interval_us;
   }
   stepper_ra.change_dir(is_forward);
 }
@@ -355,8 +342,8 @@ void handle_runnables(){
 //  BoundStepperRaPrintRunnable();
 //  BoundStepperDecPrintRunnable();
 //  
-  BoundEncoderRaUpdateRunnable();
-  BoundRaFeedback();
+//  BoundEncoderRaUpdateRunnable();
+//  BoundRaFeedback();
   BoundStepperRaMove();
   BoundStepperDecMove();
 //  BoundEncoderRaPrintRunnable();
@@ -368,14 +355,14 @@ void handle_events(){
 
 void setup() {
   Serial.begin(115200);
-  enkoder_ra.setup_encoder();
+//  enkoder_ra.setup_encoder();
   stepper_ra.setup_pins();
   stepper_de.setup_pins();
   stepper_focuser.setup_pins();
   ra_last_step_us = micros();
   ra_state = NOT_TRACKING;
   stepper_ra.set_delay_us(100);
-  stepper_de.set_delay_us(1000);
+  stepper_de.set_delay_us(100);
   set_fast_adc();
 }
 
