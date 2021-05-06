@@ -49,6 +49,7 @@ char command_trash[COMMAND_MAX_LENGTH];
 Stepper stepper_ra(Y_STEP_PIN, Y_DIR_PIN, Y_ENABLE_PIN, "STRA");
 Stepper stepper_focuser(X_STEP_PIN, X_DIR_PIN, X_ENABLE_PIN, "FOCU");
 Stepper stepper_de(Z_STEP_PIN, Z_DIR_PIN, Z_ENABLE_PIN, "STDE");
+AbsoluteEncoder abs_ra_encoder(ASB_CS_PIN, ABS_DO_PIN, ABS_CLK_PIN, "AERA");
 
 void handle_unknown_command(){
   Serial.println("BHS");
@@ -175,18 +176,23 @@ void handle_serial(){
 //  enkoder_ra.runnable_update_position();
 //}
 
-//int encoder_ra_print_counter = 0;
+int abs_encoder_ra_print_counter = 0;
 int step_ra_print_counter = 0;
 int step_de_print_counter = 0;
 
 
-//void BoundEncoderRaPrintRunnable(){
-//  if (encoder_ra_print_counter >= 1000){
-//    enkoder_ra.print_to(Serial);
-//    encoder_ra_print_counter = 0;
-//  }
-//  encoder_ra_print_counter++;
-//}
+void BoundAbsEncoderRaPrintRunnable(){
+  if (abs_encoder_ra_print_counter == 500){
+    Serial.println("BHS");
+    Serial.println("TESTING miscealoneous");
+  }
+  if (abs_encoder_ra_print_counter >= 1000){
+    abs_ra_encoder.get_position();
+    abs_ra_encoder.print_to(Serial);
+    abs_encoder_ra_print_counter = 0;
+  }
+  abs_encoder_ra_print_counter++;
+}
 
 void BoundStepperRaPrintRunnable(){
   if (step_ra_print_counter >= 1000){
@@ -339,9 +345,11 @@ void handle_runnables(){
   BoundStepperFocuserSlew();
   BoundStepperRaSlew();
   BoundStepperDecSlew();
-//  BoundStepperRaPrintRunnable();
-//  BoundStepperDecPrintRunnable();
-//  
+  
+  BoundStepperRaPrintRunnable();
+  BoundStepperDecPrintRunnable();
+  BoundAbsEncoderRaPrintRunnable();
+  
 //  BoundEncoderRaUpdateRunnable();
 //  BoundRaFeedback();
   BoundStepperRaMove();
@@ -355,7 +363,7 @@ void handle_events(){
 
 void setup() {
   Serial.begin(115200);
-//  enkoder_ra.setup_encoder();
+  abs_ra_encoder.setup_encoder();
   stepper_ra.setup_pins();
   stepper_de.setup_pins();
   stepper_focuser.setup_pins();

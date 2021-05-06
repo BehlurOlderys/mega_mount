@@ -1,9 +1,17 @@
 #include "AbsoluteEncoder.h"
 
+AbsoluteEncoderDebugData::AbsoluteEncoderDebugData(const char* four_letter_name):
+  _name{0} 
+{
+  memcpy(_name, four_letter_name, sizeof(_name));
+}
+  
+
 AbsoluteEncoder::AbsoluteEncoder(int8_t CSn_pin, int8_t DO_pin, int8_t CLK_pin, const char* name_str):
 _csn_pin(CSn_pin),
 _do_pin(DO_pin),
 _clk_pin(CLK_pin),
+_current_position(0),
 _only_four_letters_name()
 {
 	memset(_only_four_letters_name, 0, sizeof(_only_four_letters_name));
@@ -35,5 +43,10 @@ uint16_t AbsoluteEncoder::get_position(){
   }
 
   digitalWrite(_csn_pin, HIGH);
+  _current_position = value;
   return value;
 }
+
+template <>
+uint8_t type_id<AbsoluteEncoderDebugData>(){ return ABSOLUTE_ENCODER_TYPE_ID; }
+
