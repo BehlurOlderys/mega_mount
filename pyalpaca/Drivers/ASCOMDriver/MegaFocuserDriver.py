@@ -1,6 +1,6 @@
 from .SimpleFocuserDriver import SimpleFocuserDriver
 from .MyDeviceDriver import MyDeviceDriver
-from Drivers.COMPortReader import *
+from Drivers.COMPortReader import get_last_focuser_message, get_focuser_messages_length, SerialReader
 import time
 from struct import unpack
 import logging
@@ -9,6 +9,7 @@ log = logging.getLogger(__name__)
 STEPPER_TYPE_ID = 2
 RETRIES_FOR_STATUS_POLL = 5
 POLLING_MIN_PERIOD_IN_SECONDS = 1
+
 
 
 def deserialize_stepper(raw_payload):
@@ -62,13 +63,6 @@ class MegaFocuserDriver(SimpleFocuserDriver):
 
         MyDeviceDriver.connected.fset(self, value)
 
-    @staticmethod
-    def get_focuser_messages_length():
-        return len(serial_mega_info[STEPPER_TYPE_ID]["FOCU"])
-
-    @staticmethod
-    def get_last_focuser_message():
-        return serial_mega_info[STEPPER_TYPE_ID]["FOCU"][-1]
 
     @property
     def ismoving(self):
@@ -80,16 +74,16 @@ class MegaFocuserDriver(SimpleFocuserDriver):
 
         self.__last_poll = time_now
         log.debug("Sending command position...")
-        current_size = self.get_focuser_messages_length()
+        current_size = get_focuser_messages_length()
         SerialReader.write("FO_POSITION\n")
         log.debug("Acquiring response about position....")
         max_wait_ms = 1000
         current_wait_ms = 0
-        while (current_wait_ms < max_wait_ms) and (current_size >= self.get_focuser_messages_length()):
+        while (current_wait_ms < max_wait_ms) and (current_size >= get_focuser_messages_length()):
             time.sleep(0.001)
             current_wait_ms += 1
 
-        new_message = self.get_last_focuser_message()
+        new_message = get_last_focuser_message()
         log.debug(f"Current = {new_message}")
         self.__position = new_message["position"]
         self.__is_slewing = new_message["is_slewing"]

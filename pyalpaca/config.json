@@ -1,4 +1,5 @@
 {
+  "common_port": "COM6",
   "drivers": [
     {
       "device_type": "telescope",

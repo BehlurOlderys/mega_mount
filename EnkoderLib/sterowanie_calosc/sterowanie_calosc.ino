@@ -53,6 +53,8 @@ AbsoluteEncoder abs_ra_encoder(ASB_CS_PIN, ABS_DO_PIN, ABS_CLK_PIN, "AERA");
 
 void handle_unknown_command(){
   Serial.println("BHS");
+  Serial.println(micros());
+  Serial.println(UNSPECIFIED_TYPE_ID);
   Serial.print("UNKNOWN COMMAND: ");
   Serial.print(command_string);
   Serial.println("!");
@@ -139,8 +141,7 @@ void handle_serial(){
     StopTrackingRA();
   }else if (0 == strcmp(command_name, "IS_TRACKING")){
     bool const is_tracking = (TRACKING == ra_state);
-    Serial.println("BHS");
-    Serial.println(is_tracking);
+    PrintToSerial(Serial, is_tracking);
   } // DECLINATION AXIS:
    else if (0 == strcmp(command_name, "DE_HALT")){
     stepper_de.halt();
@@ -183,8 +184,7 @@ int step_de_print_counter = 0;
 
 void BoundAbsEncoderRaPrintRunnable(){
   if (abs_encoder_ra_print_counter == 500){
-    Serial.println("BHS");
-    Serial.println("TESTING miscealoneous");
+    PrintToSerial(Serial, "Testing misc");
   }
   if (abs_encoder_ra_print_counter >= 1000){
     abs_ra_encoder.get_position();

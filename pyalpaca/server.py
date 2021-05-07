@@ -21,19 +21,13 @@ def instantiate_driver(config):
     
     driver = config['driver_instance']
     if driver is None:
-        #
-        # elif config['device_type'] == 'telescope':
-        #     if config['device_driver'] == 'DummyMountDriver':
-        #         from Drivers.ASCOMDriver.SimpleEQMountDriver import SimpleEQMountDriver
-        #         print("Choosing driver for SimpleEQMountDriver")
-        #         driver = SimpleEQMountDriver(config["driver_config"])
-        #         config['driver_instance'] = driver
-        #     if config['device_driver'] == 'MegaMountDriver':
-        #         from Drivers.ASCOMDriver.MegaMountDriver import MegaMountDriver
-        #         print("Choosing driver for MegaMountDriver")
-        #         driver = MegaMountDriver(config["driver_config"])
-        #         config['driver_instance'] = driver
-        if config['device_type'] == 'focuser':
+        if config['device_type'] == 'telescope':
+            if config['device_driver'] == 'MegaMountDriver':
+                from Drivers.ASCOMDriver.MegaMountDriver import MegaMountDriver
+                print("Choosing driver for MegaMountDriver")
+                driver = MegaMountDriver(config["driver_config"])
+                config['driver_instance'] = driver
+        elif config['device_type'] == 'focuser':
             if config['device_driver'] == 'MegaFocuserDriver':
                 from Drivers.ASCOMDriver.MegaFocuserDriver import MegaFocuserDriver
                 print("Choosing driver for MegaFocuserDriver")
@@ -78,7 +72,7 @@ def init_logging():
     consoleHandler = logging.StreamHandler()
     consoleHandler.setFormatter(logFormatter)
     rootLogger.addHandler(consoleHandler)
-    rootLogger.setLevel(logging.INFO)
+    rootLogger.setLevel(logging.DEBUG)
 
 
 class Server:
@@ -89,8 +83,8 @@ class Server:
             initConfig()
             com_port = services.config.ascomConfig["common_port"]
             print(f"COM port = {com_port}")
-            serial_reader = SerialReader(com_port)
-            self.serial_handler_thread = threading.Thread(target=serial_reader.loop)
+            self.serial_reader = SerialReader(com_port)
+            self.serial_handler_thread = threading.Thread(target=self.serial_reader.loop)
             self.serial_handler_thread.start()
             handlers = get_rest_handlers()
             print("Start the service")
@@ -102,6 +96,7 @@ class Server:
             print("\nStop the service")
 
     def __del__(self):
+        self.serial_reader.kill()
         self.serial_handler_thread.join()
 
 
