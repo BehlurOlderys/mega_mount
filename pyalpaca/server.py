@@ -1,7 +1,9 @@
 import tornado
 import pyrestful
 import services
+import threading
 
+from Drivers.COMPortReader import SerialReader
 from services.dome_service import DomeService
 from services.SimpleTelescopeService import SimpleTelescopeService
 from services.SimpleFocuserService import SimpleFocuserService
@@ -19,32 +21,19 @@ def instantiate_driver(config):
     
     driver = config['driver_instance']
     if driver is None:
-        if config['device_type'] == 'dome':
-            # TODO  dynamically instantiate the drivers
-        
-            if config['device_driver'] == 'MyASCOMDomeDriver':
-                from Drivers.ASCOMDriver.MyDomeDriver import MyDomeDriver
-                driver = MyDomeDriver()  # TODO pass driver_config as well ?
-                config['driver_instance'] = driver
-        elif config['device_type'] == 'filterwheel':
-            if config['device_driver'] == 'SimpleFilterWheelDriver':
-                from Drivers.ASCOMDriver.SimpleFilterWheelDriver import SimpleFilterWheelDriver
-                print("Choosing driver for SimpleFilterWheelDriver")
-                driver = SimpleFilterWheelDriver(config["driver_config"])
-                config['driver_instance'] = driver
-
-        elif config['device_type'] == 'telescope':
-            if config['device_driver'] == 'DummyMountDriver':
-                from Drivers.ASCOMDriver.SimpleEQMountDriver import SimpleEQMountDriver
-                print("Choosing driver for SimpleEQMountDriver")
-                driver = SimpleEQMountDriver(config["driver_config"])
-                config['driver_instance'] = driver
-            if config['device_driver'] == 'MegaMountDriver':
-                from Drivers.ASCOMDriver.MegaMountDriver import MegaMountDriver
-                print("Choosing driver for MegaMountDriver")
-                driver = MegaMountDriver(config["driver_config"])
-                config['driver_instance'] = driver
-        elif config['device_type'] == 'focuser':
+        #
+        # elif config['device_type'] == 'telescope':
+        #     if config['device_driver'] == 'DummyMountDriver':
+        #         from Drivers.ASCOMDriver.SimpleEQMountDriver import SimpleEQMountDriver
+        #         print("Choosing driver for SimpleEQMountDriver")
+        #         driver = SimpleEQMountDriver(config["driver_config"])
+        #         config['driver_instance'] = driver
+        #     if config['device_driver'] == 'MegaMountDriver':
+        #         from Drivers.ASCOMDriver.MegaMountDriver import MegaMountDriver
+        #         print("Choosing driver for MegaMountDriver")
+        #         driver = MegaMountDriver(config["driver_config"])
+        #         config['driver_instance'] = driver
+        if config['device_type'] == 'focuser':
             if config['device_driver'] == 'MegaFocuserDriver':
                 from Drivers.ASCOMDriver.MegaFocuserDriver import MegaFocuserDriver
                 print("Choosing driver for MegaFocuserDriver")
@@ -89,18 +78,33 @@ def init_logging():
     consoleHandler = logging.StreamHandler()
     consoleHandler.setFormatter(logFormatter)
     rootLogger.addHandler(consoleHandler)
-    rootLogger.setLevel(logging.DEBUG)
+    rootLogger.setLevel(logging.INFO)
+
+
+class Server:
+    def __init__(self):
+        init_logging()
+        self.serial_handler_thread = None
+        try:
+            initConfig()
+            com_port = services.config.ascomConfig["common_port"]
+            print(f"COM port = {com_port}")
+            serial_reader = SerialReader(com_port)
+            self.serial_handler_thread = threading.Thread(target=serial_reader.loop)
+            self.serial_handler_thread.start()
+            handlers = get_rest_handlers()
+            print("Start the service")
+            app = pyrestful.rest.RestService(handlers)
+            http_server = tornado.httpserver.HTTPServer(app)
+            http_server.listen(11111)
+            tornado.ioloop.IOLoop.instance().start()
+        except KeyboardInterrupt:
+            print("\nStop the service")
+
+    def __del__(self):
+        self.serial_handler_thread.join()
 
 
 if __name__ == '__main__':
-    init_logging()
-    try:
-        initConfig()
-        handlers = get_rest_handlers()
-        print("Start the service")
-        app = pyrestful.rest.RestService(handlers)
-        http_server = tornado.httpserver.HTTPServer(app)
-        http_server.listen(11111)
-        tornado.ioloop.IOLoop.instance().start()
-    except KeyboardInterrupt:
-        print("\nStop the service")
+    server = Server()
+
